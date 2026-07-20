@@ -1,5 +1,6 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.client.compat.sodium;
 
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.GuiEntityRenderContext;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.BedrockCube;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.compat.sodium.ISodiumVertexWriter;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree.CubeBox;
@@ -218,6 +219,10 @@ public final class SodiumTreeGeometryWriter implements ISodiumVertexWriter {
     }
 
     private static boolean shouldCullFace(int face, Matrix4f pose, float nx, float ny, float nz) {
+        if (GuiEntityRenderContext.isActive()) {
+            // GUI 实体预览使用正交投影，相机视线恒定，不能使用透视视图的面中心向量。
+            return nz < 0.0F;
+        }
         int[] verts = BedrockCube.VERTEX_ORDER[face];
         float cx = vx(verts[0]) + vx(verts[2]);
         float cy = vy(verts[0]) + vy(verts[2]);

@@ -1,5 +1,6 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.client.compat.sodium;
 
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.GuiEntityRenderContext;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.compat.sodium.ISodiumVertexWriter;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked.BakedGeometryChunk;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked.BakedQuadData;
@@ -145,6 +146,9 @@ public class SodiumBakedChunkWriter implements ISodiumVertexWriter, ChunkVertexW
                                           float p20, float p21, float p22,
                                           float p30, float p31, float p32,
                                           float nx, float ny, float nz) {
+        if (GuiEntityRenderContext.isActive()) {
+            return nz < 0.0F;
+        }
         float cx = positions[positionBase] + positions[positionBase + 6];
         float cy = positions[positionBase + 1] + positions[positionBase + 7];
         float cz = positions[positionBase + 2] + positions[positionBase + 8];

@@ -1,5 +1,6 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked;
 
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.GuiEntityRenderContext;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.compat.sodium.SodiumCompat;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -113,6 +114,9 @@ public class BakedGeometryChunkRenderer {
     }
 
     private boolean shouldCullQuad(float[] positions, int positionBase, Matrix4f poseMatrix, float nx, float ny, float nz) {
+        if (GuiEntityRenderContext.isActive()) {
+            return nz < 0.0F;
+        }
         float cx = positions[positionBase] + positions[positionBase + 6];
         float cy = positions[positionBase + 1] + positions[positionBase + 7];
         float cz = positions[positionBase + 2] + positions[positionBase + 8];

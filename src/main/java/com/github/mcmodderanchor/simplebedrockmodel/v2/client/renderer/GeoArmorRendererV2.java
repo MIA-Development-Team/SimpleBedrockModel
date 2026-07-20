@@ -86,10 +86,10 @@ public class GeoArmorRendererV2 extends HumanoidModel<HumanoidRenderState> imple
 
         collector.submitCustomGeometry(poseStack, renderType, (pose, consumer) ->
                 this.model.renderBoneTree(this.instance, stackFrom(pose), consumer, packedLight, packedOverlay,
-                        red, green, blue, alpha, true));
+                        red, green, blue, alpha, true, false));
         collector.submitCustomGeometry(poseStack, BedrockModelRenderTypes.polyMeshCutout(this.texture), (pose, consumer) ->
                 this.model.renderBoneTree(this.instance, stackFrom(pose), consumer, packedLight, packedOverlay,
-                        red, green, blue, alpha, false));
+                        red, green, blue, alpha, false, false));
     }
 
     private static PoseStack stackFrom(PoseStack.Pose pose) {
@@ -119,7 +119,8 @@ public class GeoArmorRendererV2 extends HumanoidModel<HumanoidRenderState> imple
                 red,
                 green,
                 blue,
-                alpha
+                alpha,
+                false
         );
         poseStack.popPose();
     }
