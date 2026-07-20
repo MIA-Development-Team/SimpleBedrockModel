@@ -9,50 +9,31 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class TestBlock extends HorizontalDirectionalBlock implements EntityBlock {
+/** 右键可在“走路/跑步”动画间平滑切换的方块实体测试块。 */
+public final class TestBlock extends HorizontalDirectionalBlock implements EntityBlock {
     public static final MapCodec<TestBlock> CODEC = simpleCodec(TestBlock::new);
+
     public TestBlock(BlockBehaviour.Properties properties) {
-        super(Properties.of()
-                .mapColor(MapColor.PODZOL)
-                .strength(2.0F)
-                .sound(SoundType.WOOD)
-                .lightLevel(s -> 15)
-                .noOcclusion()
-                .ignitedByLava());
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+        super(properties);
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
-
-    public TestBlock() {
-        super(Properties.of()
-                .mapColor(MapColor.PODZOL)
-                .strength(2.0F)
-                .sound(SoundType.WOOD)
-                .lightLevel(s -> 0)
-                .noOcclusion()
-                .ignitedByLava());
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
-    }
-
-    private static final BlockEntityTicker<TestBlockEntity> ticker = (level, pos, state, blockEntity) -> {
-        blockEntity.tick(level, pos, state);
-    };
 
     @Override
-    @Nullable
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection());
+    public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
+        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
     @Override
@@ -61,39 +42,32 @@ public class TestBlock extends HorizontalDirectionalBlock implements EntityBlock
     }
 
     @Override
-    @Nullable
-    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new TestBlockEntity(blockPos, blockState);
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new TestBlockEntity(pos, state);
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
-        if (pLevel.isClientSide) {
-            BlockEntity pBlockEntity = pLevel.getBlockEntity(pPos);
-            if (pBlockEntity instanceof TestBlockEntity blockEntity) {
-                blockEntity.setChanged();
-            }
-            return InteractionResult.SUCCESS;
-        } else {
-            BlockEntity pBlockEntity = pLevel.getBlockEntity(pPos);
-            if (pBlockEntity instanceof TestBlockEntity blockEntity) {
-                blockEntity.getAnimationInstance().triggerTransition();
-                blockEntity.replicateAnimationInstance();
-            }
-            return InteractionResult.CONSUME;
-        }
+    protected RenderShape getRenderShape(BlockState state) {
+        return RenderShape.INVISIBLE;
     }
 
-    @Nullable
-    @SuppressWarnings("unchecked")
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level pLevel,
-                                                                   @NotNull BlockState pState,
-                                                                   @NotNull BlockEntityType<T> pBlockEntityType) {
-        if (pBlockEntityType == ExampleModRegister.TEST_BLOCK_ENTITY_TYPE) {
-            return (BlockEntityTicker<T>) ticker;
-        } else {
-            return null;
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
+                                               Player player, BlockHitResult hit) {
+        if (level.getBlockEntity(pos) instanceof TestBlockEntity blockEntity) {
+            blockEntity.getAnimationInstance().triggerTransition();
         }
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(
+            Level level, BlockState state, BlockEntityType<T> type) {
+        return level.isClientSide() && type == ExampleModRegister.TEST_BLOCK_ENTITY_TYPE
+                ? (tickerLevel, pos, tickerState, blockEntity) ->
+                        TestBlockEntity.tick(tickerLevel, pos, tickerState, (TestBlockEntity) blockEntity)
+                : null;
     }
 
     @Override

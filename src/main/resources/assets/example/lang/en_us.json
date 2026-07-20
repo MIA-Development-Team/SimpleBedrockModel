@@ -3,6 +3,12 @@
   "block.example.test_block": "Example Block",
   "block.example.poly_mesh_test_block": "Poly Mesh Test Block",
   "item.example.deagle": "Deagle",
+  "item.example.tree_deagle": "Tree Deagle (Animated)",
+  "item.example.zti_spawner": "ZTI Render Test Spawner",
+  "item.example.defender_helmet": "Defender Helmet",
+  "item.example.defender_chestplate": "Defender Chestplate",
+  "item.example.defender_leggings": "Defender Leggings",
+  "item.example.defender_boots": "Defender Boots",
   "sounds.subtitle.step": "Step",
   "sounds.subtitle.deagle_shoot": "Deagle shoot",
   "sounds.subtitle.deagle_draw": "Deagle draw"

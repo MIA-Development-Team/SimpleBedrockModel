@@ -39,15 +39,20 @@ public class TreeArmorModelInstance extends TreeModelInstance {
     }
 
     public void preparePose(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
+        preparePose(equipmentSlot, original);
+    }
+
+    /** 26.1 会先把原版动画姿态复制到替换模型，再进入实际盔甲渲染。 */
+    public void preparePose(EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
         this.resetPose();
-        copyModelPart(original.head, this.armorHead, 0, 24, 0);
-        copyModelPart(original.body, this.armorBody, 0, 24, 0);
-        copyModelPart(original.rightArm, this.armorRightArm, 5, 22, 0);
-        copyModelPart(original.leftArm, this.armorLeftArm, -5, 22, 0);
-        copyModelPart(original.rightLeg, this.armorRightLeg, 1.9f, 12, 0);
-        copyModelPart(original.leftLeg, this.armorLeftLeg, -1.9f, 12, 0);
-        copyModelPart(original.rightLeg, this.armorRightBoot, 1.9f, 12, 0);
-        copyModelPart(original.leftLeg, this.armorLeftBoot, -1.9f, 12, 0);
+        copyModelPart(original.head, this.armorHead, 0, 0, 0);
+        copyModelPart(original.body, this.armorBody, 0, 0, 0);
+        copyModelPart(original.rightArm, this.armorRightArm, -5, 2, 0);
+        copyModelPart(original.leftArm, this.armorLeftArm, 5, 2, 0);
+        copyModelPart(original.rightLeg, this.armorRightLeg, -1.9f, 12, 0);
+        copyModelPart(original.leftLeg, this.armorLeftLeg, 1.9f, 12, 0);
+        copyModelPart(original.rightLeg, this.armorRightBoot, -1.9f, 12, 0);
+        copyModelPart(original.leftLeg, this.armorLeftBoot, 1.9f, 12, 0);
         setVisibilityBySlot(equipmentSlot);
     }
 
@@ -74,14 +79,15 @@ public class TreeArmorModelInstance extends TreeModelInstance {
             float deltaY = part.y - initY;
             float deltaZ = part.z - initZ;
 
-            bone.x += deltaX;
+            // Bedrock 的 X 轴以及 X/Y 旋转方向与原版 HumanoidModel 相反。
+            bone.x -= deltaX;
             bone.y += deltaY;
             bone.z += deltaZ;
 
-            bone.rotation.rotationZYX(part.zRot, part.yRot, part.xRot);
+            bone.rotation.rotationZYX(part.zRot, -part.yRot, -part.xRot);
 
-            bone.xScale = -part.xScale;
-            bone.yScale = -part.yScale;
+            bone.xScale = part.xScale;
+            bone.yScale = part.yScale;
             bone.zScale = part.zScale;
             bone.visible = part.visible;
         }

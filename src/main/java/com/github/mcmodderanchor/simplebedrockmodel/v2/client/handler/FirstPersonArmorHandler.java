@@ -4,10 +4,7 @@ import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.IFPArmorH
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
@@ -45,13 +42,14 @@ public class FirstPersonArmorHandler {
         if (chestStack.isEmpty()) return;
 
         IClientItemExtensions ext = IClientItemExtensions.of(chestStack.getItem());
-        var model = ext.getHumanoidArmorModel(chestStack, EquipmentClientInfo.LayerType.HUMANOID, getDefaultModel());
+        HumanoidModel<?> original = getDefaultModel();
+        original.resetPose();
+        original.rightArm.zRot = 0.1F;
+        original.leftArm.zRot = -0.1F;
+        var model = ext.getGenericArmorModel(chestStack, EquipmentClientInfo.LayerType.HUMANOID, original);
         if (!(model instanceof IFPArmorHandRenderer armorRenderer)) return;
 
-        try (ByteBufferBuilder builder = new ByteBufferBuilder(RenderType.BIG_BUFFER_SIZE)) {
-            MultiBufferSource.BufferSource buffers = MultiBufferSource.immediate(builder);
-            armorRenderer.renderFirstPersonArmorArm(player, arm, event.getPoseStack(), buffers, event.getPackedLight());
-            buffers.endBatch();
-        }
+        armorRenderer.renderFirstPersonArmorArm(
+                player, arm, event.getPoseStack(), event.getSubmitNodeCollector(), event.getPackedLight());
     }
 }

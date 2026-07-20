@@ -114,7 +114,7 @@ public class TestBlockAnimationContext implements Tickable {
         if (runner != null) {
             runner.tick();
             Level level = blockEntity.getLevel();
-            if (level != null && !level.isClientSide) {
+            if (level != null && !level.isClientSide()) {
                 @SuppressWarnings("unchecked")
                 Iterable<Keyframe<Identifier>> sounds = runner.clip(BedrockAnimation.SOUND_CHANNEL_NAME);
                 if (sounds != null) {
@@ -136,7 +136,7 @@ public class TestBlockAnimationContext implements Tickable {
     }
 
     public void handleUpdateTag(CompoundTag tag) {
-        currentAnimationIndex = tag.getInt("AnimationIndex");
-        needTransition = tag.getBoolean("NeedTransition");
+        currentAnimationIndex = tag.getInt("AnimationIndex").orElse(0);
+        needTransition = tag.getBoolean("NeedTransition").orElse(false);
     }
 }

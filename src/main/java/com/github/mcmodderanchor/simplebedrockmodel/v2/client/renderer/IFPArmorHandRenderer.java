@@ -3,7 +3,7 @@ package com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.handler.FirstPersonArmorHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.entity.HumanoidArm;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,5 +25,5 @@ public interface IFPArmorHandRenderer {
      * @param packedLight 光照值
      */
     void renderFirstPersonArmorArm(@NotNull AbstractClientPlayer player, @NotNull HumanoidArm arm, @NotNull PoseStack poseStack,
-                                   @NotNull MultiBufferSource bufferSource, int packedLight);
+                                   @NotNull SubmitNodeCollector collector, int packedLight);
 }

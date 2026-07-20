@@ -3,73 +3,40 @@ package com.github.mcmodderanchor.simplebedrockmodel.v2.mixin.client;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.ICustomArmorRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.Model;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.core.Holder;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.ARGB;
-import net.minecraft.world.item.equipment.ArmorMaterial;
-import net.minecraft.world.item.equipment.trim.ArmorTrim;
+import net.minecraft.client.renderer.OrderedSubmitNodeCollector;
+import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(HumanoidArmorLayer.class)
+/** 将自定义盔甲模型接入 26.1 的提交式装备渲染管线。 */
+@Mixin(EquipmentLayerRenderer.class)
 public class HumanoidArmorLayerMixin {
 
-    @Inject(
-            method = "renderModel(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/model/Model;ILnet/minecraft/resources/Identifier;)V",
-            at = @At("HEAD"),
-            cancellable = true
+    @Redirect(
+            method = "renderLayers(Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/client/model/Model;Ljava/lang/Object;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/resources/Identifier;II)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/OrderedSubmitNodeCollector;submitModel(Lnet/minecraft/client/model/Model;Ljava/lang/Object;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/rendertype/RenderType;IIILnet/minecraft/client/renderer/texture/TextureAtlasSprite;ILnet/minecraft/client/renderer/feature/ModelFeatureRenderer$CrumblingOverlay;)V"
+            )
     )
-    private void sbm$renderMultiBufferArmor(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight,
-                                            Model model, int color, Identifier armorResource,
-                                            CallbackInfo ci) {
+    private <S> void sbm$submitCustomArmor(OrderedSubmitNodeCollector collector, Model<? super S> model, S state,
+                                           PoseStack poseStack, RenderType renderType, int packedLight,
+                                           int packedOverlay, int color, @Nullable TextureAtlasSprite sprite,
+                                           int outlineColor,
+                                           ModelFeatureRenderer.@Nullable CrumblingOverlay crumblingOverlay) {
         if (model instanceof ICustomArmorRenderer renderer) {
-            renderer.renderArmorToBuffer(
-                    poseStack,
-                    bufferSource,
-                    packedLight,
-                    OverlayTexture.NO_OVERLAY,
-                    ARGB.red(color) / 255.0F,
-                    ARGB.green(color) / 255.0F,
-                    ARGB.blue(color) / 255.0F,
-                    ARGB.alpha(color) / 255.0F
-            );
-            ci.cancel();
-        }
-    }
-
-    @Inject(
-            method = "renderTrim(Lnet/minecraft/core/Holder;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/item/armortrim/ArmorTrim;Lnet/minecraft/client/model/Model;Z)V",
-            at = @At("HEAD"),
-            cancellable = true
-    )
-    private void sbm$skipVanillaTrim(Holder<ArmorMaterial> armorMaterial, PoseStack poseStack, MultiBufferSource bufferSource,
-                                     int packedLight, ArmorTrim trim, Model model, boolean innerTexture,
-                                     CallbackInfo ci) {
-        if (model instanceof ICustomArmorRenderer renderer) {
-            renderer.renderArmorTrimToBuffer(armorMaterial, poseStack, bufferSource, packedLight, trim, innerTexture);
-            if (!renderer.shouldRenderVanillaTrim()) {
-                ci.cancel();
+            // 自定义 Bedrock UV 不使用原版盔甲纹饰图集；纹饰 pass 在此跳过。
+            if (sprite == null) {
+                renderer.submitArmor(poseStack, collector, renderType, packedLight, packedOverlay, color);
             }
+            return;
         }
-    }
-
-    @Inject(
-            method = "renderGlint(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/model/Model;)V",
-            at = @At("HEAD"),
-            cancellable = true
-    )
-    private void sbm$skipVanillaGlint(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight,
-                                      Model model, CallbackInfo ci) {
-        if (model instanceof ICustomArmorRenderer renderer) {
-            renderer.renderArmorGlintToBuffer(poseStack, bufferSource, packedLight);
-            if (!renderer.shouldRenderVanillaGlint()) {
-                ci.cancel();
-            }
-        }
+        collector.submitModel(model, state, poseStack, renderType, packedLight, packedOverlay, color,
+                sprite, outlineColor, crumblingOverlay);
     }
 }

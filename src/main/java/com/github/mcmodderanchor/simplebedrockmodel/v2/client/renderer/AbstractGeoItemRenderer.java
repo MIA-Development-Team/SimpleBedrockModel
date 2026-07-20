@@ -54,12 +54,16 @@ public abstract class AbstractGeoItemRenderer<M extends BedrockModel>
      */
     @Override
     public void applyLevelCameraAnimation(ViewportEvent.ComputeCameraAngles event, ItemStack stack, Quaternionf animateRot, float partialTicks) {
-        Quaternionf initialRotation = new Quaternionf().rotateYXZ(-event.getYaw(), -event.getPitch(), -event.getRoll());
+        Quaternionf initialRotation = new Quaternionf().rotateYXZ(
+                (float) Math.toRadians(-event.getYaw()),
+                (float) Math.toRadians(-event.getPitch()),
+                (float) Math.toRadians(-event.getRoll())
+        );
         YXZRotationView rotationView = new YXZRotationView(initialRotation.mul(animateRot));
         Vector3fc eulerAngle = rotationView.asEulerAngle();
-        event.setYaw(-eulerAngle.y());
-        event.setPitch(-eulerAngle.x());
-        event.setRoll(-eulerAngle.z());
+        event.setYaw((float) Math.toDegrees(-eulerAngle.y()));
+        event.setPitch((float) Math.toDegrees(-eulerAngle.x()));
+        event.setRoll((float) Math.toDegrees(-eulerAngle.z()));
     }
 
     /**

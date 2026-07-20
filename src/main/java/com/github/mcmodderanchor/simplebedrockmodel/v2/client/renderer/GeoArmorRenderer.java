@@ -11,6 +11,8 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.OrderedSubmitNodeCollector;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -113,6 +115,18 @@ public class GeoArmorRenderer extends HumanoidModel<HumanoidRenderState> impleme
      * 非原版盔甲层直接调用时使用的后备渲染路径。
      */
     @Override
+    public void submitArmor(PoseStack poseStack, OrderedSubmitNodeCollector collector, RenderType renderType,
+                            int packedLight, int packedOverlay, int color) {
+        collector.submitCustomGeometry(poseStack, renderType, (pose, consumer) -> {
+            PoseStack stack = new PoseStack();
+            stack.last().set(pose);
+            this.model.renderToBuffer(stack, consumer, packedLight, packedOverlay,
+                    ARGB.red(color) / 255.0F, ARGB.green(color) / 255.0F,
+                    ARGB.blue(color) / 255.0F, ARGB.alpha(color) / 255.0F);
+        });
+    }
+
+    @Override
     public void renderArmorToBuffer(PoseStack poseStack, MultiBufferSource bufferSource, int light, int overlay,
                                     float red, float green, float blue, float alpha) {
         VertexConsumer vertexConsumer = bufferSource.getBuffer(getRenderType(getTexture()));
@@ -136,7 +150,7 @@ public class GeoArmorRenderer extends HumanoidModel<HumanoidRenderState> impleme
 
     @Override
     public void renderFirstPersonArmorArm(@NotNull AbstractClientPlayer player, @NotNull HumanoidArm arm, @NotNull PoseStack poseStack,
-                                          @NotNull MultiBufferSource bufferSource, int packedLight) {
+                                          @NotNull SubmitNodeCollector collector, int packedLight) {
         BedrockBone armBone = arm == HumanoidArm.RIGHT
                 ? this.model.getArmorRightArm()
                 : this.model.getArmorLeftArm();
@@ -144,12 +158,12 @@ public class GeoArmorRenderer extends HumanoidModel<HumanoidRenderState> impleme
             return;
         }
 
-        VertexConsumer consumer = bufferSource.getBuffer(getRenderType(getTexture()));
-
-        poseStack.pushPose();
-        poseStack.mulPose(getGlobalTransform(armBone));
-        armBone.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY);
-        poseStack.popPose();
+        collector.submitCustomGeometry(poseStack, getRenderType(getTexture()), (pose, consumer) -> {
+            PoseStack stack = new PoseStack();
+            stack.last().set(pose);
+            stack.mulPose(getGlobalTransform(armBone));
+            armBone.render(stack, consumer, packedLight, OverlayTexture.NO_OVERLAY);
+        });
     }
 
     private static Matrix4f getGlobalTransform(@NotNull BedrockBone targetBone) {

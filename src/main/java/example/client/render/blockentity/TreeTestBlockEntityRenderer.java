@@ -1,12 +1,10 @@
 package example.client.render.blockentity;
 
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.BedrockModelRenderTypes;
-import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.BedrockAnimationFile;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.TreeModelInstance;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree.TreeBedrockModel;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.resource.BedrockAnimationResources;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.resource.BedrockModelResources;
-import com.google.common.base.Suppliers;
 import com.maydaymemory.mae.basic.ArrayPoseBuilder;
 import com.maydaymemory.mae.basic.Pose;
 import com.maydaymemory.mae.basic.ZYXBoneTransformFactory;
@@ -15,85 +13,90 @@ import com.maydaymemory.mae.blend.SimpleEulerAdditiveBlender;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import example.animation.TestBlockAnimationContext;
-import example.animation.TestBlockAnimationInstance;
 import example.block.blockentity.TestBlockEntity;
-import example.init.ExampleModRegister;
+import example.client.render.BedrockRenderSubmitter;
 import example.resource.KnownResources;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 import java.util.WeakHashMap;
-import java.util.function.Supplier;
 
-public class TreeTestBlockEntityRenderer implements BlockEntityRenderer<TestBlockEntity> {
-    private static final Identifier TEST_TEXTURE = ExampleModRegister.modLoc("textures/block/test.png");
-    private static final Identifier POLY_MESH_TEST_TEXTURE = ExampleModRegister.modLoc("textures/block/vct.png");
-    private static final EulerAdditiveBlender BLENDER = new SimpleEulerAdditiveBlender(new ZYXBoneTransformFactory(), ArrayPoseBuilder::new);
+/** TreeModelInstance 方块实体渲染和双动画平滑切换示例。 */
+public final class TreeTestBlockEntityRenderer implements BlockEntityRenderer<TestBlockEntity, TreeTestBlockEntityRenderer.State> {
+    private static final EulerAdditiveBlender BLENDER =
+            new SimpleEulerAdditiveBlender(new ZYXBoneTransformFactory(), ArrayPoseBuilder::new);
 
-    private final Supplier<TreeBedrockModel> testModelSupplier;
-    private final Supplier<TreeBedrockModel> polyMeshTestModelSupplier;
-    private final WeakHashMap<TestBlockEntity, TreeModelInstance> testInstanceCache = new WeakHashMap<>();
-    private final WeakHashMap<TestBlockEntity, TreeModelInstance> polyMeshInstanceCache = new WeakHashMap<>();
+    private final WeakHashMap<TestBlockEntity, TreeModelInstance> instances = new WeakHashMap<>();
+    private TreeBedrockModel model;
 
     public TreeTestBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
-        this.testModelSupplier = Suppliers.memoize(this::loadTestModel);
-        this.polyMeshTestModelSupplier = Suppliers.memoize(this::loadPolyMeshTestModel);
-    }
-
-    private TreeBedrockModel loadTestModel() {
-        TreeBedrockModel model = BedrockModelResources.getInstance().getTreeModel(KnownResources.TEST);
-        BedrockAnimationFile animationFile = BedrockAnimationResources.getInstance().getAnimationFile(KnownResources.TEST);
-        if (model != null && animationFile != null) {
-            TestBlockAnimationContext.initialize(animationFile, model);
-        }
-        return model;
-    }
-
-    private TreeBedrockModel loadPolyMeshTestModel() {
-        return BedrockModelResources.getInstance().getTreeModel(KnownResources.POLY_MESH_TEST);
     }
 
     @Override
-    public void render(@NotNull TestBlockEntity blockEntity, float partialTick, @NotNull PoseStack poseStack,
-                       @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
-        boolean polyMeshTest = blockEntity.getBlockState().is(ExampleModRegister.POLY_MESH_TEST_BLOCK);
-        TreeBedrockModel model = polyMeshTest ? polyMeshTestModelSupplier.get() : testModelSupplier.get();
+    public State createRenderState() {
+        return new State();
+    }
+
+    @Override
+    public void extractRenderState(TestBlockEntity blockEntity, State state, float partialTicks,
+                                   Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
+        ensureLoaded();
         if (model == null) {
+            state.instance = null;
             return;
         }
-
-        WeakHashMap<TestBlockEntity, TreeModelInstance> instanceCache = polyMeshTest ? polyMeshInstanceCache : testInstanceCache;
-        TreeModelInstance instance = instanceCache.computeIfAbsent(blockEntity, ignored -> model.createInstance());
-//        instance.resetPose();
-
-        if (!polyMeshTest) {
-            TestBlockAnimationInstance animationInstance = blockEntity.getAnimationInstance();
-            animationInstance.renderTick();
-            Pose animationPose = animationInstance.getStateMachine().getPose();
-
-            if (animationPose != null) {
-                Pose blended = BLENDER.blend(instance.getBindPose(), animationPose);
-                instance.applyPose(blended);
-            }
+        TreeModelInstance instance = instances.computeIfAbsent(blockEntity, ignored -> model.createInstance());
+        blockEntity.getAnimationInstance().renderTick();
+        Pose animationPose = blockEntity.getAnimationInstance().getStateMachine().getPose();
+        instance.resetPose();
+        if (animationPose != null) {
+            instance.applyPose(BLENDER.blend(instance.getBindPose(), animationPose));
         }
+        state.instance = instance;
+        state.facing = blockEntity.getBlockState().hasProperty(BlockStateProperties.HORIZONTAL_FACING)
+                ? blockEntity.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING)
+                : Direction.NORTH;
+    }
 
-        Identifier texture = polyMeshTest ? POLY_MESH_TEST_TEXTURE : TEST_TEXTURE;
-        BlockState blockState = blockEntity.getBlockState();
+    private void ensureLoaded() {
+        if (model != null) {
+            return;
+        }
+        model = BedrockModelResources.getInstance().getTreeModel(KnownResources.TEST);
+        var animationFile = BedrockAnimationResources.getInstance().getAnimationFile(KnownResources.TEST);
+        if (model != null && animationFile != null) {
+            TestBlockAnimationContext.initialize(animationFile, model);
+        }
+    }
+
+    @Override
+    public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+        if (state.instance == null) {
+            return;
+        }
         poseStack.pushPose();
-        poseStack.translate(0.5, 0, 0.5);
-        if (blockState.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
-            Direction facing = blockState.getValue(BlockStateProperties.HORIZONTAL_FACING);
-            poseStack.mulPose(Axis.YP.rotationDegrees(-facing.toYRot()));
-        }
-        instance.renderToBuffer(poseStack, bufferSource, RenderType.entityCutout(texture),
-                BedrockModelRenderTypes.polyMeshCutout(texture), packedLight, packedOverlay);
+        poseStack.translate(0.5F, 0.0F, 0.5F);
+        poseStack.mulPose(Axis.YP.rotationDegrees(-state.facing.toYRot()));
+        BedrockRenderSubmitter.submit(state.instance, poseStack, collector,
+                RenderTypes.entityCutout(KnownResources.TEST_TEXTURE),
+                BedrockModelRenderTypes.polyMeshCutout(KnownResources.TEST_TEXTURE),
+                state.lightCoords, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();
+    }
+
+    public static final class State extends BlockEntityRenderState {
+        private @Nullable TreeModelInstance instance;
+        private Direction facing = Direction.NORTH;
     }
 }

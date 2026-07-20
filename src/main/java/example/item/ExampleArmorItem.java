@@ -1,80 +1,72 @@
 package example.item;
 
+import com.github.mcmodderanchor.simplebedrockmodel.SimpleBedrockModel;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.GeoArmorRendererV2;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree.TreeBedrockModel;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.resource.BedrockModelResources;
 import example.init.ExampleModRegister;
-import example.resource.InnerResourceLoader;
-import net.minecraft.client.model.HumanoidModel;
+import example.resource.KnownResources;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.equipment.ArmorMaterial;
-import net.minecraft.world.item.equipment.ArmorMaterials;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.ArmorType;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
-@EventBusSubscriber
-public class ExampleArmorItem extends ArmorItem {
+/** 26.1 数据组件盔甲物品及 Tree 盔甲渲染示例。 */
+public final class ExampleArmorItem extends Item {
+    private final ArmorType armorType;
 
-    public ExampleArmorItem(ArmorItem.Type type) {
-        super(ArmorMaterials.DIAMOND, type, new Item.Properties().stacksTo(1));
+    public ExampleArmorItem(ArmorType armorType, Properties properties) {
+        super(properties);
+        this.armorType = armorType;
     }
 
-    @SubscribeEvent
-    public static void initializeClient(RegisterClientExtensionsEvent event) {
-        for (var item : List.of(
-                ExampleModRegister.DEFENDER_ARMOR_BOOTS,
-                ExampleModRegister.DEFENDER_ARMOR_CHESTPLATE,
-                ExampleModRegister.DEFENDER_ARMOR_HELMET,
-                ExampleModRegister.DEFENDER_ARMOR_LEGGINGS
-        )) {
-            event.registerItem(new IClientItemExtensions() {
-                private GeoArmorRendererV2 renderer;
+    public ArmorType armorType() {
+        return armorType;
+    }
 
-                @Override
-                @ParametersAreNonnullByDefault
-                public @NotNull HumanoidModel<?> getHumanoidArmorModel(
-                        LivingEntity livingEntity,
-                        ItemStack itemStack,
-                        EquipmentSlot equipmentSlot,
-                        HumanoidModel<?> original
-                ) {
-                    if (this.renderer == null) {
-                        TreeBedrockModel model = BedrockModelResources.getInstance().getTreeModel(InnerResourceLoader.DEFENDER);
-                        this.renderer = new GeoArmorRendererV2(
-                                model,
-                                item.getEquipmentSlot(),
-                                Identifier.fromNamespaceAndPath("example", "textures/armor/defender.png")
-                        );
+    @EventBusSubscriber(modid = SimpleBedrockModel.MOD_ID, value = Dist.CLIENT)
+    public static final class ClientRegistration {
+        private static final Map<Item, GeoArmorRendererV2> RENDERERS = new IdentityHashMap<>();
+
+        private ClientRegistration() {
+        }
+
+        @SubscribeEvent
+        public static void register(RegisterClientExtensionsEvent event) {
+            for (ExampleArmorItem item : new ExampleArmorItem[]{
+                    ExampleModRegister.DEFENDER_ARMOR_HELMET,
+                    ExampleModRegister.DEFENDER_ARMOR_CHESTPLATE,
+                    ExampleModRegister.DEFENDER_ARMOR_LEGGINGS,
+                    ExampleModRegister.DEFENDER_ARMOR_BOOTS
+            }) {
+                event.registerItem(new IClientItemExtensions() {
+                    @Override
+                    public Model getHumanoidArmorModel(ItemStack stack, EquipmentClientInfo.LayerType layerType, Model original) {
+                        TreeBedrockModel model = BedrockModelResources.getInstance().getTreeModel(KnownResources.DEFENDER);
+                        if (model == null) {
+                            return original;
+                        }
+                        return RENDERERS.computeIfAbsent(item, ignored -> new GeoArmorRendererV2(
+                                model, item.armorType().getSlot(), KnownResources.DEFENDER_TEXTURE));
                     }
 
-                    this.renderer.preparePose(livingEntity, itemStack, equipmentSlot, original);
-                    return this.renderer;
-                }
-            }, item);
+                    @Override
+                    public Identifier getArmorTexture(ItemStack stack, EquipmentClientInfo.LayerType type,
+                                                      EquipmentClientInfo.Layer layer, Identifier defaultTexture) {
+                        return KnownResources.DEFENDER_TEXTURE;
+                    }
+                }, item);
+            }
         }
-    }
-
-    @Override
-    public @Nullable Identifier getArmorTexture(
-            ItemStack stack,
-            Entity entity,
-            EquipmentSlot slot,
-            ArmorMaterial.Layer layer,
-            boolean innerModel
-    ) {
-        return Identifier.fromNamespaceAndPath("example", "textures/armor/defender.png");
     }
 }

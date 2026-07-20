@@ -62,8 +62,21 @@ sourceSets.main.resources {
 }
 
 sourceSets.main.java {
-    exclude 'example/**'
     exclude 'com/github/mcmodderanchor/simplebedrockmodel/v2/particle/debug/**'
+    // Keep the focused 26.1 rendering fixture; legacy gameplay examples are not needed for render QA.
+    exclude 'example/animation/ClientMolangAnimationState.java'
+    exclude 'example/animation/DeagleAnimationGraph.java'
+    exclude 'example/animation/FPGunAnimationInstance.java'
+    exclude 'example/animation/GunAnimationGraph.java'
+    exclude 'example/animation/MolangTestAnimationContext.java'
+    exclude 'example/capability/**'
+    exclude 'example/client/event/ClientTicker.java'
+    exclude 'example/client/render/blockentity/BedrockModelBlockEntityRenderer.java'
+    exclude 'example/client/render/blockentity/TestBlockEntityRenderer.java'
+    exclude 'example/client/render/blockentity/V2TestBlockEntityRenderer.java'
+    exclude 'example/event/**'
+    exclude 'example/item/GunItem.java'
+    exclude 'example/resource/InnerResourceLoader.java'
 }
 
 configurations {

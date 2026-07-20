@@ -9,12 +9,9 @@ import com.maydaymemory.mae.control.runner.AnimationContext;
 import com.maydaymemory.mae.control.runner.AnimationRunner;
 import com.maydaymemory.mae.control.runner.LoopingState;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 
-@OnlyIn(Dist.CLIENT)
 public class ClientMolangAnimationState {
     private final AnimationRunner runner;
     private final AnimationRateLimiter<Pose> poseRateLimiter;

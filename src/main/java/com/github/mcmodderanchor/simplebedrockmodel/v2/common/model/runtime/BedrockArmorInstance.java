@@ -43,6 +43,11 @@ public class BedrockArmorInstance extends BakedModelInstance {
     }
 
     public void preparePose(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
+        preparePose(equipmentSlot, original);
+    }
+
+    /** 26.1 会先把原版动画姿态复制到替换模型，再进入实际盔甲渲染。 */
+    public void preparePose(EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
         this.resetPose();
         copyModelPart(original.head, this.armorHead, 0, 24, 0);
         copyModelPart(original.body, this.armorBody, 0, 24, 0);

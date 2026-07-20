@@ -8,8 +8,7 @@ import com.maydaymemory.mae.control.statemachine.AnimationStateMachine;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 /**
  * Animation Instance 一般统合了某个游戏对象的所有动画需要的上下文，并且统一负责同步动画状态
@@ -18,12 +17,11 @@ public class TestBlockAnimationInstance {
     private final AnimationStateMachine<TestBlockAnimationContext> stateMachine;
     private final AnimationClock clock;
 
-    @OnlyIn(Dist.CLIENT)
     private RealtimeVelocityEstimatorNode velocityEstimatorNode;
 
     public TestBlockAnimationInstance(BlockEntity blockEntity) {
-        this.clock = FMLLoader.getDist() == Dist.CLIENT ? AnimationClocks.client() : AnimationClocks.system();
-        if (FMLLoader.getDist() == Dist.CLIENT) {
+        this.clock = FMLEnvironment.getDist() == Dist.CLIENT ? AnimationClocks.client() : AnimationClocks.system();
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
             velocityEstimatorNode = new RealtimeVelocityEstimatorNode(ArrayPoseBuilder::new, clock);
             stateMachine = new AnimationStateMachine<>(
                     TestBlockStateMachineState.INSTANCE,
@@ -40,7 +38,6 @@ public class TestBlockAnimationInstance {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderTick() {
         if (!clock.shouldTick()) {
             return;
@@ -68,6 +65,6 @@ public class TestBlockAnimationInstance {
     }
 
     public void handleUpdateTag(CompoundTag tag) {
-        stateMachine.getContext().handleUpdateTag(tag.getCompound("StateMachineContext"));
+        tag.getCompound("StateMachineContext").ifPresent(stateMachine.getContext()::handleUpdateTag);
     }
 }

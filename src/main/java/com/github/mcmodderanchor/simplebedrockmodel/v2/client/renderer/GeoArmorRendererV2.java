@@ -14,6 +14,8 @@ import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.OrderedSubmitNodeCollector;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -74,9 +76,34 @@ public class GeoArmorRendererV2 extends HumanoidModel<HumanoidRenderState> imple
     }
 
     @Override
+    public void submitArmor(PoseStack poseStack, OrderedSubmitNodeCollector collector, RenderType renderType,
+                            int packedLight, int packedOverlay, int color) {
+        this.instance.preparePose(this.armorSlot, this);
+        float red = ARGB.red(color) / 255.0F;
+        float green = ARGB.green(color) / 255.0F;
+        float blue = ARGB.blue(color) / 255.0F;
+        float alpha = ARGB.alpha(color) / 255.0F;
+
+        collector.submitCustomGeometry(poseStack, renderType, (pose, consumer) ->
+                this.model.renderBoneTree(this.instance, stackFrom(pose), consumer, packedLight, packedOverlay,
+                        red, green, blue, alpha, true));
+        collector.submitCustomGeometry(poseStack, BedrockModelRenderTypes.polyMeshCutout(this.texture), (pose, consumer) ->
+                this.model.renderBoneTree(this.instance, stackFrom(pose), consumer, packedLight, packedOverlay,
+                        red, green, blue, alpha, false));
+    }
+
+    private static PoseStack stackFrom(PoseStack.Pose pose) {
+        PoseStack stack = new PoseStack();
+        stack.last().set(pose);
+        return stack;
+    }
+
+    @Override
     public void renderArmorToBuffer(PoseStack poseStack, MultiBufferSource bufferSource, int light, int overlay,
                                     float red, float green, float blue, float alpha) {
         float partialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
+        // 26.1 的 ClientHooks 已把当前原版 HumanoidModel 姿态复制到 this。
+        this.instance.preparePose(this.armorSlot, this);
 
         poseStack.pushPose();
         if (this.livingEntity != null && this.equipmentSlot != null && this.original != null) {
@@ -107,7 +134,8 @@ public class GeoArmorRendererV2 extends HumanoidModel<HumanoidRenderState> imple
 
     @Override
     public void renderFirstPersonArmorArm(@NotNull AbstractClientPlayer player, @NotNull HumanoidArm arm, @NotNull PoseStack poseStack,
-                                          @NotNull MultiBufferSource bufferSource, int packedLight) {
+                                          @NotNull SubmitNodeCollector collector, int packedLight) {
+        this.instance.preparePose(EquipmentSlot.CHEST, this);
         BoneState armBone = arm == HumanoidArm.RIGHT
                 ? this.instance.getArmorRightArm()
                 : this.instance.getArmorLeftArm();
@@ -115,21 +143,18 @@ public class GeoArmorRendererV2 extends HumanoidModel<HumanoidRenderState> imple
             return;
         }
 
-        RenderType renderType = getRenderType(getTexture());
-        VertexConsumer consumer = bufferSource.getBuffer(renderType);
+        collector.submitCustomGeometry(poseStack, getRenderType(getTexture()), (pose, consumer) ->
+                renderFirstPersonArmPass(pose, consumer, armBone, packedLight, true));
+        collector.submitCustomGeometry(poseStack, BedrockModelRenderTypes.polyMeshCutout(getTexture()), (pose, consumer) ->
+                renderFirstPersonArmPass(pose, consumer, armBone, packedLight, false));
+    }
 
-        poseStack.pushPose();
-        poseStack.mulPose(this.instance.getGlobalTransform(armBone.parentIndex()));
-        this.model.renderBone(this.instance, armBone.index(), poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
-                1.0F, 1.0F, 1.0F, 1.0F, true, true);
-        poseStack.popPose();
-
-        VertexConsumer triangleConsumer = bufferSource.getBuffer(BedrockModelRenderTypes.polyMeshCutout(getTexture()));
-        poseStack.pushPose();
-        poseStack.mulPose(this.instance.getGlobalTransform(armBone.parentIndex()));
-        this.model.renderBone(this.instance, armBone.index(), poseStack, triangleConsumer, packedLight, OverlayTexture.NO_OVERLAY,
-                1.0F, 1.0F, 1.0F, 1.0F, false, true);
-        poseStack.popPose();
+    private void renderFirstPersonArmPass(PoseStack.Pose pose, VertexConsumer consumer, BoneState armBone,
+                                          int packedLight, boolean quadsPass) {
+        PoseStack stack = stackFrom(pose);
+        stack.mulPose(this.instance.getGlobalTransform(armBone.parentIndex()));
+        this.model.renderBone(this.instance, armBone.index(), stack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
+                1.0F, 1.0F, 1.0F, 1.0F, quadsPass, true);
     }
 
     public RenderType getRenderType(Identifier texture) {

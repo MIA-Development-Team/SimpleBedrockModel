@@ -1,5 +1,6 @@
 package example.client.event;
 
+import com.github.mcmodderanchor.simplebedrockmodel.SimpleBedrockModel;
 import example.client.render.blockentity.TreeTestBlockEntityRenderer;
 import example.client.render.entity.ZtiRenderer;
 import example.init.ExampleModRegister;
@@ -9,7 +10,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 
-@EventBusSubscriber(value = Dist.CLIENT)
+@EventBusSubscriber(modid = SimpleBedrockModel.MOD_ID, value = Dist.CLIENT)
 public class RegistryHandler {
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {

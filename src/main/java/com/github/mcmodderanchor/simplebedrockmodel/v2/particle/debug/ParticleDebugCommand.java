@@ -156,8 +156,10 @@ public class ParticleDebugCommand {
 
     private static void sendMessage(Component message, boolean overlay) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null) {
-            mc.player.displayClientMessage(message, overlay);
+        if (overlay) {
+            mc.gui.setOverlayMessage(message, false);
+        } else {
+            mc.gui.getChat().addClientSystemMessage(message);
         }
     }
 }

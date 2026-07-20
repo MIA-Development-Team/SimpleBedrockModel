@@ -2,7 +2,9 @@ package com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.OrderedSubmitNodeCollector;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
@@ -13,6 +15,9 @@ import net.minecraft.world.item.equipment.trim.ArmorTrim;
  * 只在通过{@link HumanoidArmorLayer}进行渲染时有效，默认不处理trim和glint
  */
 public interface ICustomArmorRenderer {
+
+    void submitArmor(PoseStack poseStack, OrderedSubmitNodeCollector collector, RenderType renderType,
+                     int packedLight, int packedOverlay, int color);
 
     void renderArmorToBuffer(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay,
                              float red, float green, float blue, float alpha);
