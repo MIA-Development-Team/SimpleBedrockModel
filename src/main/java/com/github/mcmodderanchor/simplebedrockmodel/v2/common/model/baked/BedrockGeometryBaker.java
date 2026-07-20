@@ -1,11 +1,11 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.model.BedrockCube;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BonesItem;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.CubesItem;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.FaceItem;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.FaceUVsItem;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.PolyMeshItem;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.BedrockCube;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.BonesItem;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.CubesItem;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.FaceItem;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.FaceUVsItem;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.PolyMeshItem;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import net.minecraft.core.Direction;

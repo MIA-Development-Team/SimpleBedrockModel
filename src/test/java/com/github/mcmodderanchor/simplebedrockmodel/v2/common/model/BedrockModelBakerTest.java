@@ -1,8 +1,8 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.common.model;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.GsonUtil;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BedrockAnimationFile;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BedrockModelPOJO;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.GsonUtil;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.BedrockAnimationFile;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.BedrockModelPOJO;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked.BakedBedrockModel;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked.BakerOptions;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked.BedrockModelBaker;

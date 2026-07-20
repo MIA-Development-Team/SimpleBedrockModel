@@ -1,8 +1,8 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.resource;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.BoneIndexProvider;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation;
-import net.minecraft.resources.ResourceLocation;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.BoneIndexProvider;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.animation.BedrockAnimation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -13,19 +13,19 @@ import java.util.Map;
 public record BedrockModelResource(
         BoneIndexProvider model,
         ModelType kind,
-        Map<ResourceLocation, List<BedrockAnimation>> animations
+        Map<Identifier, List<BedrockAnimation>> animations
 ) {
     public BedrockModelResource {
         animations = Map.copyOf(animations);
     }
 
     @Nullable
-    public List<BedrockAnimation> getAnimations(ResourceLocation animationId) {
+    public List<BedrockAnimation> getAnimations(Identifier animationId) {
         return animations.get(animationId);
     }
 
     @UnmodifiableView
-    public Map<ResourceLocation, List<BedrockAnimation>> getAllAnimations() {
+    public Map<Identifier, List<BedrockAnimation>> getAllAnimations() {
         return Collections.unmodifiableMap(animations);
     }
 }

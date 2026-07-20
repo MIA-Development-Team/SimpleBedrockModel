@@ -1,7 +1,7 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.client.compat.sodium;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.model.BedrockCube;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.client.compat.sodium.ISodiumVertexWriter;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.BedrockCube;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.compat.sodium.ISodiumVertexWriter;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree.CubeBox;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree.CubePerFace;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree.ICube;

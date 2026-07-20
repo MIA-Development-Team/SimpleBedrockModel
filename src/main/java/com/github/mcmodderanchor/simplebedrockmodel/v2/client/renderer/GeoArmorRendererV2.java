@@ -1,8 +1,8 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.ICustomArmorRenderer;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.IFPArmorHandRenderer;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.BedrockModelRenderTypes;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.ICustomArmorRenderer;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.IFPArmorHandRenderer;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BoneState;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.TreeArmorModelInstance;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree.TreeBedrockModel;
@@ -13,10 +13,11 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
@@ -31,7 +32,7 @@ public class GeoArmorRendererV2 extends HumanoidModel<LivingEntity> implements I
     protected final TreeBedrockModel model;
     protected final TreeArmorModelInstance instance;
     private final EquipmentSlot armorSlot;
-    private final ResourceLocation texture;
+    private final Identifier texture;
 
     @Nullable
     protected LivingEntity livingEntity;
@@ -42,11 +43,11 @@ public class GeoArmorRendererV2 extends HumanoidModel<LivingEntity> implements I
     @Nullable
     protected HumanoidModel<?> original;
 
-    public GeoArmorRendererV2(TreeBedrockModel model, EquipmentSlot armorSlot, ResourceLocation texture) {
+    public GeoArmorRendererV2(TreeBedrockModel model, EquipmentSlot armorSlot, Identifier texture) {
         this(model, new TreeArmorModelInstance(model), armorSlot, texture);
     }
 
-    public GeoArmorRendererV2(TreeBedrockModel model, TreeArmorModelInstance instance, EquipmentSlot armorSlot, ResourceLocation texture) {
+    public GeoArmorRendererV2(TreeBedrockModel model, TreeArmorModelInstance instance, EquipmentSlot armorSlot, Identifier texture) {
         super(Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.PLAYER_INNER_ARMOR));
         this.armorSlot = armorSlot;
         this.model = model;
@@ -83,10 +84,10 @@ public class GeoArmorRendererV2 extends HumanoidModel<LivingEntity> implements I
 
     @Override
     public void renderToBuffer(PoseStack poseStack, @NotNull VertexConsumer buffer, int light, int overlay, int color) {
-        float red = FastColor.ARGB32.red(color) / 255.0F;
-        float green = FastColor.ARGB32.green(color) / 255.0F;
-        float blue = FastColor.ARGB32.blue(color) / 255.0F;
-        float alpha = FastColor.ARGB32.alpha(color) / 255.0F;
+        float red = ARGB.red(color) / 255.0F;
+        float green = ARGB.green(color) / 255.0F;
+        float blue = ARGB.blue(color) / 255.0F;
+        float alpha = ARGB.alpha(color) / 255.0F;
         renderArmorToBuffer(poseStack, Minecraft.getInstance().renderBuffers().bufferSource(), light, overlay, red, green, blue, alpha);
         afterRender(poseStack, buffer, light, overlay, red, green, blue, alpha);
     }
@@ -150,11 +151,11 @@ public class GeoArmorRendererV2 extends HumanoidModel<LivingEntity> implements I
         poseStack.popPose();
     }
 
-    public RenderType getRenderType(ResourceLocation texture) {
-        return RenderType.armorCutoutNoCull(texture);
+    public RenderType getRenderType(Identifier texture) {
+        return RenderTypes.armorCutoutNoCull(texture);
     }
 
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return this.texture;
     }
 

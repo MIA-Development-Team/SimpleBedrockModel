@@ -1,7 +1,7 @@
 package example.client.render.blockentity;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BedrockAnimationFile;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.BedrockModelRenderTypes;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.BedrockAnimationFile;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.TreeModelInstance;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree.TreeBedrockModel;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.resource.BedrockAnimationResources;
@@ -20,11 +20,11 @@ import example.block.blockentity.TestBlockEntity;
 import example.init.ExampleModRegister;
 import example.resource.KnownResources;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.jetbrains.annotations.NotNull;
@@ -33,8 +33,8 @@ import java.util.WeakHashMap;
 import java.util.function.Supplier;
 
 public class TreeTestBlockEntityRenderer implements BlockEntityRenderer<TestBlockEntity> {
-    private static final ResourceLocation TEST_TEXTURE = ExampleModRegister.modLoc("textures/block/test.png");
-    private static final ResourceLocation POLY_MESH_TEST_TEXTURE = ExampleModRegister.modLoc("textures/block/vct.png");
+    private static final Identifier TEST_TEXTURE = ExampleModRegister.modLoc("textures/block/test.png");
+    private static final Identifier POLY_MESH_TEST_TEXTURE = ExampleModRegister.modLoc("textures/block/vct.png");
     private static final EulerAdditiveBlender BLENDER = new SimpleEulerAdditiveBlender(new ZYXBoneTransformFactory(), ArrayPoseBuilder::new);
 
     private final Supplier<TreeBedrockModel> testModelSupplier;
@@ -84,7 +84,7 @@ public class TreeTestBlockEntityRenderer implements BlockEntityRenderer<TestBloc
             }
         }
 
-        ResourceLocation texture = polyMeshTest ? POLY_MESH_TEST_TEXTURE : TEST_TEXTURE;
+        Identifier texture = polyMeshTest ? POLY_MESH_TEST_TEXTURE : TEST_TEXTURE;
         BlockState blockState = blockEntity.getBlockState();
         poseStack.pushPose();
         poseStack.translate(0.5, 0, 0.5);

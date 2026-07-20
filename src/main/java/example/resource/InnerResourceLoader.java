@@ -1,18 +1,18 @@
 package example.resource;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.client.model.BedrockArmorModel;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.event.RegisterBedrockModelEvent;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.event.RegisterBedrockModelReloadListenerEvent;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.resource.RawResourceLoaders;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.model.BedrockArmorModel;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.event.RegisterBedrockModelEvent;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.event.RegisterBedrockModelReloadListenerEvent;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.resource.RawResourceLoaders;
 import example.init.ExampleModRegister;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
 @EventBusSubscriber
 public class InnerResourceLoader {
 
-    public static final ResourceLocation DEFENDER = ResourceLocation.fromNamespaceAndPath(ExampleModRegister.MOD_ID, "defender.geo");
+    public static final Identifier DEFENDER = Identifier.fromNamespaceAndPath(ExampleModRegister.MOD_ID, "defender.geo");
     public static BedrockArmorModel DEFENDER_MODEL;
 
     @SubscribeEvent

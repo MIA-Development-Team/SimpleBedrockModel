@@ -1,12 +1,12 @@
 package example.animation;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.time.AnimationClock;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.time.AnimationClocks;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.molang.MolangEngineHelper;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.event.RegisterBedrockAnimationReloadListenerEvent;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.molang.MochaEngine;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.molang.runtime.MolangContext;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.time.AnimationClock;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.time.AnimationClocks;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.animation.BedrockAnimation;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.molang.MolangEngineHelper;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.event.RegisterBedrockAnimationReloadListenerEvent;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.molang.MochaEngine;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.molang.runtime.MolangContext;
 import com.maydaymemory.mae.basic.Pose;
 import com.maydaymemory.mae.control.runner.AnimationContext;
 import com.maydaymemory.mae.control.runner.AnimationRunner;

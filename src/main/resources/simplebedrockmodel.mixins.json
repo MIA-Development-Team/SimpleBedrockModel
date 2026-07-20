@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.github.mcmodderanchor.simplebedrockmodel.v1.mixin",
+  "package": "com.github.mcmodderanchor.simplebedrockmodel.v2.mixin",
   "compatibilityLevel": "JAVA_8",
   "refmap": "simplebedrockmodel.refmap.json",
   "mixins": [

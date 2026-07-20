@@ -1,15 +1,15 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.resource;
 
 import com.github.mcmodderanchor.simplebedrockmodel.SimpleBedrockModel;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.BoneIndexProvider;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BedrockAnimationFile;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BedrockModelPOJO;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.BoneIndexProvider;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.animation.BedrockAnimation;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.BedrockAnimationFile;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.BedrockModelPOJO;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked.BakedBedrockModel;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked.BakerOptions;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree.TreeBedrockModel;
 import com.google.common.collect.Maps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -28,11 +28,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class BedrockModelResources extends SimplePreparableReloadListener<Map<ResourceLocation, Optional<BedrockModelPOJO>>> {
-    private final Map<ResourceLocation, BedrockModelEntry> processors;
-    private final List<Consumer<Map<ResourceLocation, BedrockModelResource>>> listeners;
-    private final Map<ResourceLocation, Optional<BedrockModelPOJO>> pojoCache;
-    private final Map<ResourceLocation, Optional<BedrockModelResource>> resourceCache;
+public class BedrockModelResources extends SimplePreparableReloadListener<Map<Identifier, Optional<BedrockModelPOJO>>> {
+    private final Map<Identifier, BedrockModelEntry> processors;
+    private final List<Consumer<Map<Identifier, BedrockModelResource>>> listeners;
+    private final Map<Identifier, Optional<BedrockModelPOJO>> pojoCache;
+    private final Map<Identifier, Optional<BedrockModelResource>> resourceCache;
     @Nullable
     private ResourceManager resourceManager;
 
@@ -42,8 +42,8 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
         return INSTANCE;
     }
 
-    public BedrockModelResources(Map<ResourceLocation, BedrockModelEntry> processors,
-                                 List<Consumer<Map<ResourceLocation, BedrockModelResource>>> listeners) {
+    public BedrockModelResources(Map<Identifier, BedrockModelEntry> processors,
+                                 List<Consumer<Map<Identifier, BedrockModelResource>>> listeners) {
         this.processors = Map.copyOf(processors);
         this.listeners = List.copyOf(listeners);
         this.pojoCache = Maps.newHashMap();
@@ -53,8 +53,8 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
     @Override
     @NotNull
     @ParametersAreNonnullByDefault
-    protected Map<ResourceLocation, Optional<BedrockModelPOJO>> prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
-        Map<ResourceLocation, Optional<BedrockModelPOJO>> result = Maps.newHashMap();
+    protected Map<Identifier, Optional<BedrockModelPOJO>> prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
+        Map<Identifier, Optional<BedrockModelPOJO>> result = Maps.newHashMap();
         processors.forEach((location, processor) -> {
             if (processor.lazy()) {
                 return;
@@ -66,7 +66,7 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
 
     @Override
     @ParametersAreNonnullByDefault
-    protected void apply(Map<ResourceLocation, Optional<BedrockModelPOJO>> prepared, ResourceManager resourceManager, ProfilerFiller profiler) {
+    protected void apply(Map<Identifier, Optional<BedrockModelPOJO>> prepared, ResourceManager resourceManager, ProfilerFiller profiler) {
         this.resourceManager = resourceManager;
         pojoCache.clear();
         resourceCache.clear();
@@ -81,14 +81,14 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
             }
             resourceCache.put(location, createModelResource(location, processor, pojo.get()));
         });
-        Map<ResourceLocation, BedrockModelResource> resources = getAllResources();
-        for (Consumer<Map<ResourceLocation, BedrockModelResource>> listener : listeners) {
+        Map<Identifier, BedrockModelResource> resources = getAllResources();
+        for (Consumer<Map<Identifier, BedrockModelResource>> listener : listeners) {
             listener.accept(resources);
         }
     }
 
     @Nullable
-    public synchronized BedrockModelResource getResource(ResourceLocation location) {
+    public synchronized BedrockModelResource getResource(Identifier location) {
         Optional<BedrockModelResource> cached = resourceCache.get(location);
         if (cached != null) {
             return cached.orElse(null);
@@ -110,7 +110,7 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
 
 
     @Nullable
-    public synchronized BakedBedrockModel getBakedModel(ResourceLocation location) {
+    public synchronized BakedBedrockModel getBakedModel(Identifier location) {
         BedrockModelResource resource = getResource(location);
         if (resource == null || resource.kind() != ModelType.BAKED) {
             return null;
@@ -119,7 +119,7 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
     }
 
     @Nullable
-    public synchronized TreeBedrockModel getTreeModel(ResourceLocation location) {
+    public synchronized TreeBedrockModel getTreeModel(Identifier location) {
         BedrockModelResource resource = getResource(location);
         if (resource == null || resource.kind() != ModelType.TREE) {
             return null;
@@ -128,13 +128,13 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
     }
 
     @Nullable
-    public synchronized List<BedrockAnimation> getAnimations(ResourceLocation modelId, ResourceLocation animationId) {
+    public synchronized List<BedrockAnimation> getAnimations(Identifier modelId, Identifier animationId) {
         BedrockModelResource resource = getResource(modelId);
         return resource == null ? null : resource.getAnimations(animationId);
     }
 
     @Nullable
-    public synchronized BedrockModelPOJO getModelPojo(ResourceLocation location) {
+    public synchronized BedrockModelPOJO getModelPojo(Identifier location) {
         Optional<BedrockModelPOJO> cached = pojoCache.get(location);
         if (cached != null) {
             return cached.orElse(null);
@@ -153,7 +153,7 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
         return pojo.orElse(null);
     }
 
-    public synchronized void clearLoaded(ResourceLocation location) {
+    public synchronized void clearLoaded(Identifier location) {
         pojoCache.remove(location);
         resourceCache.remove(location);
     }
@@ -164,18 +164,18 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
     }
 
     @UnmodifiableView
-    public Map<ResourceLocation, BedrockModelResource> getAllResources() {
-        Map<ResourceLocation, BedrockModelResource> result = new LinkedHashMap<>();
-        for (Map.Entry<ResourceLocation, Optional<BedrockModelResource>> entry : resourceCache.entrySet()) {
+    public Map<Identifier, BedrockModelResource> getAllResources() {
+        Map<Identifier, BedrockModelResource> result = new LinkedHashMap<>();
+        for (Map.Entry<Identifier, Optional<BedrockModelResource>> entry : resourceCache.entrySet()) {
             entry.getValue().ifPresent(resource -> result.put(entry.getKey(), resource));
         }
         return Collections.unmodifiableMap(result);
     }
 
     @UnmodifiableView
-    public Map<ResourceLocation, BakedBedrockModel> getAllBakedModels() {
-        Map<ResourceLocation, BakedBedrockModel> result = new LinkedHashMap<>();
-        for (Map.Entry<ResourceLocation, BedrockModelResource> entry : getAllResources().entrySet()) {
+    public Map<Identifier, BakedBedrockModel> getAllBakedModels() {
+        Map<Identifier, BakedBedrockModel> result = new LinkedHashMap<>();
+        for (Map.Entry<Identifier, BedrockModelResource> entry : getAllResources().entrySet()) {
             if (entry.getValue().kind() == ModelType.BAKED) {
                 result.put(entry.getKey(), (BakedBedrockModel) entry.getValue().model());
             }
@@ -184,9 +184,9 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
     }
 
     @UnmodifiableView
-    public Map<ResourceLocation, TreeBedrockModel> getAllTreeModels() {
-        Map<ResourceLocation, TreeBedrockModel> result = new LinkedHashMap<>();
-        for (Map.Entry<ResourceLocation, BedrockModelResource> entry : getAllResources().entrySet()) {
+    public Map<Identifier, TreeBedrockModel> getAllTreeModels() {
+        Map<Identifier, TreeBedrockModel> result = new LinkedHashMap<>();
+        for (Map.Entry<Identifier, BedrockModelResource> entry : getAllResources().entrySet()) {
             if (entry.getValue().kind() == ModelType.TREE) {
                 result.put(entry.getKey(), (TreeBedrockModel) entry.getValue().model());
             }
@@ -195,17 +195,17 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
     }
 
     @UnmodifiableView
-    public Map<ResourceLocation, Optional<BedrockModelPOJO>> getModelPojos() {
+    public Map<Identifier, Optional<BedrockModelPOJO>> getModelPojos() {
         return Collections.unmodifiableMap(pojoCache);
     }
 
-    private Optional<BedrockModelResource> createModelResource(ResourceLocation location, BedrockModelEntry processor, BedrockModelPOJO pojo) {
+    private Optional<BedrockModelResource> createModelResource(Identifier location, BedrockModelEntry processor, BedrockModelPOJO pojo) {
         try {
             BoneIndexProvider model = switch (processor.kind()) {
                 case BAKED -> createBakedModel(location, processor, pojo);
                 case TREE -> TreeBedrockModel.bake(pojo);
             };
-            Map<ResourceLocation, List<BedrockAnimation>> animations = createAnimations(processor, model);
+            Map<Identifier, List<BedrockAnimation>> animations = createAnimations(processor, model);
             return Optional.of(new BedrockModelResource(model, processor.kind(), animations));
         } catch (RuntimeException e) {
             SimpleBedrockModel.LOGGER.error("Failed to create v2 model resource: {}", location, e);
@@ -213,7 +213,7 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
         }
     }
 
-    private BakedBedrockModel createBakedModel(ResourceLocation location, BedrockModelEntry processor, BedrockModelPOJO pojo) {
+    private BakedBedrockModel createBakedModel(Identifier location, BedrockModelEntry processor, BedrockModelPOJO pojo) {
         List<BedrockAnimationFile> animationFiles = collectAnimationFiles(location, processor);
         BedrockModelBakeContext context = new BedrockModelBakeContext(location, pojo, animationFiles);
         BakerOptions options = processor.optionsFactory().apply(context);
@@ -223,7 +223,7 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
         return BakedBedrockModel.bake(pojo, options);
     }
 
-    private List<BedrockAnimationFile> collectAnimationFiles(ResourceLocation modelId, BedrockModelEntry processor) {
+    private List<BedrockAnimationFile> collectAnimationFiles(Identifier modelId, BedrockModelEntry processor) {
         if (processor.animationSourceIds().isEmpty()) {
             return List.of();
         }
@@ -233,7 +233,7 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
             return List.of();
         }
         ArrayList<BedrockAnimationFile> files = new ArrayList<>();
-        for (ResourceLocation animationId : processor.animationSourceIds()) {
+        for (Identifier animationId : processor.animationSourceIds()) {
             BedrockAnimationFile file = animationResourceSet.getAnimationFile(animationId);
             if (file != null) {
                 files.add(file);
@@ -242,7 +242,7 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
         return files;
     }
 
-    private Map<ResourceLocation, List<BedrockAnimation>> createAnimations(BedrockModelEntry modelProcessor, BoneIndexProvider model) {
+    private Map<Identifier, List<BedrockAnimation>> createAnimations(BedrockModelEntry modelProcessor, BoneIndexProvider model) {
         if (modelProcessor.animationSourceIds().isEmpty()) {
             return Map.of();
         }
@@ -250,8 +250,8 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
         if (animationResourceSet == null) {
             return Map.of();
         }
-        Map<ResourceLocation, List<BedrockAnimation>> animations = new LinkedHashMap<>();
-        for (ResourceLocation animationId : modelProcessor.animationSourceIds()) {
+        Map<Identifier, List<BedrockAnimation>> animations = new LinkedHashMap<>();
+        for (Identifier animationId : modelProcessor.animationSourceIds()) {
             BedrockAnimationEntry animationProcessor = animationResourceSet.getProcessor(animationId);
             if (animationProcessor == null || !animationProcessor.createRuntimeAnimations() || animationProcessor.factory() == null) {
                 continue;
@@ -269,7 +269,7 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
     }
 
     private static Optional<BedrockModelPOJO> loadModelPojo(ResourceManager resourceManager, BedrockModelEntry processor) {
-        ResourceLocation path = modelPath(processor.sourceId());
+        Identifier path = modelPath(processor.sourceId());
         return resourceManager.getResource(path).map(resource -> {
             try (InputStream stream = resource.open()) {
                 return Optional.ofNullable(processor.rawLoader().load(stream, BedrockModelPOJO.class));
@@ -283,7 +283,7 @@ public class BedrockModelResources extends SimplePreparableReloadListener<Map<Re
         });
     }
 
-    private static ResourceLocation modelPath(ResourceLocation location) {
-        return ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "models/bedrock/" + location.getPath() + ".json");
+    private static Identifier modelPath(Identifier location) {
+        return Identifier.fromNamespaceAndPath(location.getNamespace(), "models/bedrock/" + location.getPath() + ".json");
     }
 }

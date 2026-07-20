@@ -1,7 +1,7 @@
 package example.client.render.blockentity;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.model.BedrockModel;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.resource.BedrockModelResourceSet;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.BedrockModel;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.resource.BedrockModelResourceSet;
 import com.google.common.base.Suppliers;
 import com.maydaymemory.mae.basic.ArrayPoseBuilder;
 import com.maydaymemory.mae.basic.Pose;
@@ -15,22 +15,22 @@ import example.block.blockentity.TestBlockEntity;
 import example.init.ExampleModRegister;
 import example.resource.KnownResources;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
 public class TestBlockEntityRenderer extends BedrockModelBlockEntityRenderer<TestBlockEntity> {
-    private static final ResourceLocation TEST_TEXTURE = ExampleModRegister.modLoc("textures/block/test.png");
-    private static final ResourceLocation POLY_MESH_TEST_TEXTURE = ExampleModRegister.modLoc("textures/block/vct.png");
+    private static final Identifier TEST_TEXTURE = ExampleModRegister.modLoc("textures/block/test.png");
+    private static final Identifier POLY_MESH_TEST_TEXTURE = ExampleModRegister.modLoc("textures/block/vct.png");
     private static final EulerAdditiveBlender BLENDER = new SimpleEulerAdditiveBlender(new ZYXBoneTransformFactory(), ArrayPoseBuilder::new);
 
     private final Supplier<BedrockModel> testModelSupplier;
     private final Supplier<BedrockModel> polyMeshTestModelSupplier;
     private Supplier<BedrockModel> activeModelSupplier;
-    private ResourceLocation activeTexture;
+    private Identifier activeTexture;
 
     public TestBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
         testModelSupplier = Suppliers.memoize(() -> BedrockModelResourceSet.getInstance().getModel(KnownResources.TEST));
@@ -45,12 +45,12 @@ public class TestBlockEntityRenderer extends BedrockModelBlockEntityRenderer<Tes
     }
 
     @Override
-    protected ResourceLocation getTexture() {
+    protected Identifier getTexture() {
         return activeTexture;
     }
 
     @Override
-    protected RenderType getRenderType(ResourceLocation textureLocation) {
+    protected RenderType getRenderType(Identifier textureLocation) {
         return RenderType.entityCutout(textureLocation);
     }
 

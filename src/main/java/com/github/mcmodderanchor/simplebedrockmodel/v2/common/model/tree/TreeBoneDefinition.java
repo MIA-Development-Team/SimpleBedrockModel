@@ -1,10 +1,7 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.model.LocatorData;
-import com.github.mcmodderanchor.simplebedrockmodel.v2.client.compat.acceleratedrendering.AcceleratedBedrockGeometryCache;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.LocatorData;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BoneDefinition;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
@@ -34,8 +31,6 @@ public final class TreeBoneDefinition implements BoneDefinition {
     private final boolean hasQuadsInTree;
     private final boolean hasVerticesInTree;
 
-    @OnlyIn(Dist.CLIENT)
-    private AcceleratedBedrockGeometryCache cache;
 
     public TreeBoneDefinition(String name, int index, int parentIndex, int[] children,
                               float pivotX, float pivotY, float pivotZ,
@@ -175,12 +170,4 @@ public final class TreeBoneDefinition implements BoneDefinition {
         childBones = linkedChildren;
     }
 
-    @ApiStatus.Internal
-    @OnlyIn(Dist.CLIENT)
-    public AcceleratedBedrockGeometryCache getOrCreateCache() {
-        if (cache == null) {
-            cache = new AcceleratedBedrockGeometryCache();
-        }
-        return cache;
-    }
 }

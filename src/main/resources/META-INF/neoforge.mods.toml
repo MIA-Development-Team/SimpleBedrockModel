@@ -1,5 +1,3 @@
-modLoader = "javafml"
-loaderVersion = "${loader_version_range}"
 license = "${mod_license}"
 showAsResourcePack = false
 
@@ -13,14 +11,14 @@ description = '''${mod_description}'''
 [[mixins]]
 config = "${mod_id}.mixins.json"
 
-[[dependencies."${mod_id}"]]
+[[dependencies.${mod_id}]]
 modId = "neoforge"
 type = "required"
 versionRange = "${neo_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies."${mod_id}"]]
+[[dependencies.${mod_id}]]
 modId = "minecraft"
 type = "required"
 versionRange = "${minecraft_version_range}"
@@ -28,9 +26,3 @@ ordering = "NONE"
 side = "BOTH"
 
 
-[[dependencies."${mod_id}"]]
-modId = "acceleratedrendering"
-type = "optional"
-versionRange = "[1.0.8,)"
-ordering = "AFTER"
-side = "CLIENT"

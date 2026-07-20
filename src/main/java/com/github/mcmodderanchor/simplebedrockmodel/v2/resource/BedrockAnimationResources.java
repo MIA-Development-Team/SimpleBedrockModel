@@ -1,9 +1,9 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.resource;
 
 import com.github.mcmodderanchor.simplebedrockmodel.SimpleBedrockModel;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BedrockAnimationFile;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.BedrockAnimationFile;
 import com.google.common.collect.Maps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -18,9 +18,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-public class BedrockAnimationResources extends SimplePreparableReloadListener<Map<ResourceLocation, Optional<BedrockAnimationFile>>> {
-    private final Map<ResourceLocation, BedrockAnimationEntry> processors;
-    private final Map<ResourceLocation, Optional<BedrockAnimationFile>> fileCache;
+public class BedrockAnimationResources extends SimplePreparableReloadListener<Map<Identifier, Optional<BedrockAnimationFile>>> {
+    private final Map<Identifier, BedrockAnimationEntry> processors;
+    private final Map<Identifier, Optional<BedrockAnimationFile>> fileCache;
     @Nullable
     private ResourceManager resourceManager;
 
@@ -30,7 +30,7 @@ public class BedrockAnimationResources extends SimplePreparableReloadListener<Ma
         return INSTANCE;
     }
 
-    public BedrockAnimationResources(Map<ResourceLocation, BedrockAnimationEntry> processors) {
+    public BedrockAnimationResources(Map<Identifier, BedrockAnimationEntry> processors) {
         this.processors = Map.copyOf(processors);
         this.fileCache = Maps.newHashMap();
     }
@@ -38,8 +38,8 @@ public class BedrockAnimationResources extends SimplePreparableReloadListener<Ma
     @Override
     @NotNull
     @ParametersAreNonnullByDefault
-    protected Map<ResourceLocation, Optional<BedrockAnimationFile>> prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
-        Map<ResourceLocation, Optional<BedrockAnimationFile>> result = Maps.newHashMap();
+    protected Map<Identifier, Optional<BedrockAnimationFile>> prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
+        Map<Identifier, Optional<BedrockAnimationFile>> result = Maps.newHashMap();
         processors.forEach((location, processor) -> {
             if (processor.lazy()) {
                 return;
@@ -51,14 +51,14 @@ public class BedrockAnimationResources extends SimplePreparableReloadListener<Ma
 
     @Override
     @ParametersAreNonnullByDefault
-    protected void apply(Map<ResourceLocation, Optional<BedrockAnimationFile>> prepared, ResourceManager resourceManager, ProfilerFiller profiler) {
+    protected void apply(Map<Identifier, Optional<BedrockAnimationFile>> prepared, ResourceManager resourceManager, ProfilerFiller profiler) {
         this.resourceManager = resourceManager;
         fileCache.clear();
         fileCache.putAll(prepared);
     }
 
     @Nullable
-    public synchronized BedrockAnimationFile getAnimationFile(ResourceLocation location) {
+    public synchronized BedrockAnimationFile getAnimationFile(Identifier location) {
         Optional<BedrockAnimationFile> cached = fileCache.get(location);
         if (cached != null) {
             return cached.orElse(null);
@@ -78,11 +78,11 @@ public class BedrockAnimationResources extends SimplePreparableReloadListener<Ma
     }
 
     @Nullable
-    public BedrockAnimationEntry getProcessor(ResourceLocation location) {
+    public BedrockAnimationEntry getProcessor(Identifier location) {
         return processors.get(location);
     }
 
-    public synchronized void clearLoaded(ResourceLocation location) {
+    public synchronized void clearLoaded(Identifier location) {
         fileCache.remove(location);
     }
 
@@ -91,13 +91,13 @@ public class BedrockAnimationResources extends SimplePreparableReloadListener<Ma
     }
 
     @UnmodifiableView
-    public Map<ResourceLocation, Optional<BedrockAnimationFile>> getAllAnimationFiles() {
+    public Map<Identifier, Optional<BedrockAnimationFile>> getAllAnimationFiles() {
         return Collections.unmodifiableMap(fileCache);
     }
 
-    private static Optional<BedrockAnimationFile> loadAnimationFile(ResourceManager resourceManager, ResourceLocation location,
+    private static Optional<BedrockAnimationFile> loadAnimationFile(ResourceManager resourceManager, Identifier location,
                                                                     BedrockAnimationEntry processor) {
-        ResourceLocation path = animationPath(location);
+        Identifier path = animationPath(location);
         return resourceManager.getResource(path).map(resource -> {
             try (InputStream stream = resource.open()) {
                 return Optional.ofNullable(processor.rawLoader().load(stream, BedrockAnimationFile.class));
@@ -111,7 +111,7 @@ public class BedrockAnimationResources extends SimplePreparableReloadListener<Ma
         });
     }
 
-    private static ResourceLocation animationPath(ResourceLocation location) {
-        return ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "animations/" + location.getPath() + ".json");
+    private static Identifier animationPath(Identifier location) {
+        return Identifier.fromNamespaceAndPath(location.getNamespace(), "animations/" + location.getPath() + ".json");
     }
 }

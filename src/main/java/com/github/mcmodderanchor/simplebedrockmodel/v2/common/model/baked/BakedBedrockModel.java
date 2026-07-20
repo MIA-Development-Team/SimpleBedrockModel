@@ -1,15 +1,15 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.BoneIndexProvider;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BedrockModelPOJO;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.BoneIndexProvider;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.BedrockModelPOJO;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BakedModelInstance;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BoneState;
 import com.maydaymemory.mae.basic.Pose;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -25,7 +25,7 @@ import java.util.Map;
  * 同时，运行时数据改为由{@link BakedModelInstance}承担，本类仅持有静态的骨骼和顶点信息
  */
 public class BakedBedrockModel implements BoneIndexProvider {
-    private static final int MAX_LIGHT_TEXTURE = LightTexture.pack(15, 15);
+    private static final int MAX_LIGHT_TEXTURE = LightCoordsUtil.pack(15, 15);
     // 压缩后的骨骼
     private final BakedBoneDefinition[] bones;
     private final Map<String, Integer> boneIndexByName;

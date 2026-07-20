@@ -9,7 +9,7 @@ import example.item.ExampleArmorItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.*;
@@ -123,7 +123,7 @@ public class ExampleModRegister {
         }
     }
 
-    public static ResourceLocation modLoc(String name) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, name);
+    public static Identifier modLoc(String name) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, name);
     }
 }

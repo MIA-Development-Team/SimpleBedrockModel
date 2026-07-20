@@ -1,8 +1,8 @@
 package example.block.blockentity;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.AnimationRateLimiter;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.time.AnimationClocks;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.animation.AnimationRateLimiter;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.animation.BedrockAnimation;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.time.AnimationClocks;
 import example.animation.ClientMolangAnimationState;
 import example.animation.MolangTestAnimationContext;
 import example.animation.TestBlockAnimationInstance;

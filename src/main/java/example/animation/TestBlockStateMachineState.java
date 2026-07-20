@@ -1,6 +1,6 @@
 package example.animation;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.animation.BedrockAnimation;
 import com.maydaymemory.mae.basic.DummyPose;
 import com.maydaymemory.mae.basic.Pose;
 import com.maydaymemory.mae.control.blend.EasingBlendCurve;

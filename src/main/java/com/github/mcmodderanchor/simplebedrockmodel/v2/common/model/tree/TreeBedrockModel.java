@@ -1,17 +1,16 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.BoneIndexProvider;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.model.LocatorData;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BedrockModelPOJO;
-import com.github.mcmodderanchor.simplebedrockmodel.v2.client.compat.acceleratedrendering.AcceleratedRenderingCompat;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.BoneIndexProvider;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.LocatorData;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.BedrockModelPOJO;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BoneState;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.TreeModelInstance;
 import com.maydaymemory.mae.basic.Pose;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -24,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class TreeBedrockModel implements BoneIndexProvider {
-    private static final int MAX_LIGHT_TEXTURE = LightTexture.pack(15, 15);
+    private static final int MAX_LIGHT_TEXTURE = LightCoordsUtil.pack(15, 15);
 
     private final TreeBoneDefinition[] bones;
     private final Map<String, Integer> boneIndexByName;
@@ -185,9 +184,6 @@ public class TreeBedrockModel implements BoneIndexProvider {
                                         boolean skipNormalVisibilityCull) {
         ICube[] cubes = def.cubes();
         if (cubes.length == 0) return;
-        if (AcceleratedRenderingCompat.renderCubes(def, consumer, pose, light, overlay, red, green, blue, alpha)) {
-            return;
-        }
         TreeGeometryWriter.writeCubes(cubes, consumer, pose.pose(), pose.normal(), light, overlay, red, green, blue, alpha, skipNormalVisibilityCull);
     }
 
@@ -196,9 +192,6 @@ public class TreeBedrockModel implements BoneIndexProvider {
                                              int light, int overlay, float red, float green, float blue, float alpha) {
         PolyMesh[] polyMeshes = def.polyMeshes();
         if (polyMeshes.length == 0) return;
-        if (AcceleratedRenderingCompat.renderPolyMeshes(def, consumer, pose, light, overlay, red, green, blue, alpha)) {
-            return;
-        }
         TreeGeometryWriter.writePolyMeshes(polyMeshes, consumer, pose.pose(), pose.normal(), light, overlay, red, green, blue, alpha);
     }
 

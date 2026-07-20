@@ -1,9 +1,9 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.model.BedrockCube;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.BedrockCube;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.compat.sodium.SodiumCompat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -178,7 +178,7 @@ public final class TreeGeometryWriter {
         float x = position.x;
         float y = position.y;
         float z = position.z;
-        int color = FastColor.ARGB32.color(
+        int color = ARGB.color(
                 (int) (alpha * 255.0F),
                 (int) (red * 255.0F),
                 (int) (green * 255.0F),
@@ -207,7 +207,7 @@ public final class TreeGeometryWriter {
             ny *= invLength;
             nz *= invLength;
         }
-        int color = FastColor.ARGB32.color(
+        int color = ARGB.color(
                 (int) (alpha * 255.0F),
                 (int) (red * 255.0F),
                 (int) (green * 255.0F),

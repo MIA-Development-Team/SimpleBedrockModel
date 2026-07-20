@@ -1,9 +1,5 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v2.client.compat.acceleratedrendering.AcceleratedBedrockGeometryCache;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.ApiStatus;
 
 public final class BakedGeometryChunk {
     private final int attachBoneIndex;
@@ -11,8 +7,6 @@ public final class BakedGeometryChunk {
     private final BakedVertexData vertices;
     private final String[] sourceBones;
 
-    @OnlyIn(Dist.CLIENT)
-    private AcceleratedBedrockGeometryCache cache;
 
     public BakedGeometryChunk(int attachBoneIndex, BakedQuadData quads, BakedVertexData vertices, String[] sourceBones) {
         this.attachBoneIndex = attachBoneIndex;
@@ -31,15 +25,6 @@ public final class BakedGeometryChunk {
 
     public BakedVertexData vertices() {
         return vertices;
-    }
-
-    @ApiStatus.Internal
-    @OnlyIn(Dist.CLIENT)
-    public AcceleratedBedrockGeometryCache getOrCreateCache() {
-        if (cache == null) {
-            cache = new AcceleratedBedrockGeometryCache();
-        }
-        return cache;
     }
 
     public String[] sourceBones() {

@@ -1,17 +1,18 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.client.model.SlotModel;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.IFPGeoItemRenderer;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.util.RenderDistance;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.model.SlotModel;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.IFPGeoItemRenderer;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.util.RenderDistance;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +41,7 @@ public abstract class AbstractGeoItemRendererV2 extends BlockEntityWithoutLevelR
      * 物品栏 / GUI 中显示的 2D 纹理。返回 {@code null} 时回退到 {@link MissingTextureAtlasSprite}。
      */
     @Nullable
-    public abstract ResourceLocation getSlotTexture(ItemStack stack);
+    public abstract Identifier getSlotTexture(ItemStack stack);
 
     /**
      * 判断当前物品是否有可渲染的 3D 模型。返回 {@code false} 时走 GUI slot 渲染路径。
@@ -122,17 +123,17 @@ public abstract class AbstractGeoItemRendererV2 extends BlockEntityWithoutLevelR
     }
 
     public void renderSlot(ItemStack stack, PoseStack poseStack, MultiBufferSource bufferSource, int light, int overlay, boolean hasModel) {
-        ResourceLocation slotTexture = getSlotTexture(stack);
+        Identifier slotTexture = getSlotTexture(stack);
         if (slotTexture != null) {
             poseStack.pushPose();
             poseStack.translate(0.5, 0.5, 0);
-            SLOT_MODEL.renderToBuffer(poseStack, bufferSource.getBuffer(RenderType.entityTranslucent(slotTexture)), light, overlay, 0xFFFFFFFF);
+            SLOT_MODEL.renderToBuffer(poseStack, bufferSource.getBuffer(RenderTypes.entityTranslucent(slotTexture)), light, overlay, 0xFFFFFFFF);
             poseStack.popPose();
         } else if (!hasModel) {
             // 模型和 gui texture 都不存在，渲染 missing texture
             poseStack.pushPose();
             poseStack.translate(0.5, 0.5, 0);
-            RenderType renderType = RenderType.entityTranslucent(MissingTextureAtlasSprite.getLocation());
+            RenderType renderType = RenderTypes.entityTranslucent(MissingTextureAtlasSprite.getLocation());
             SLOT_MODEL.renderToBuffer(poseStack, bufferSource.getBuffer(renderType), light, overlay, 0xFFFFFFFF);
             poseStack.popPose();
         }

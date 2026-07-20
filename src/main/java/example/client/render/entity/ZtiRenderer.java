@@ -1,8 +1,8 @@
 package example.client.render.entity;
 
 import com.github.mcmodderanchor.simplebedrockmodel.SimpleBedrockModel;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BedrockAnimationFile;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.BedrockModelRenderTypes;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.BedrockAnimationFile;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked.BakedBedrockModel;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BakedModelInstance;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked.BakedBoneDefinition;
@@ -21,11 +21,11 @@ import example.animation.ZtiAnimationContext;
 import example.entity.Zti;
 import example.resource.KnownResources;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +33,7 @@ import java.util.WeakHashMap;
 import java.util.function.Supplier;
 
 public class ZtiRenderer extends EntityRenderer<Zti> {
-    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath("example", "textures/entity/zti.png");
+    public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath("example", "textures/entity/zti.png");
 
     private static final EulerAdditiveBlender BLENDER = new SimpleEulerAdditiveBlender(new ZYXBoneTransformFactory(), ArrayPoseBuilder::new);
 
@@ -95,7 +95,7 @@ public class ZtiRenderer extends EntityRenderer<Zti> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(@NotNull Zti entity) {
+    public Identifier getTextureLocation(@NotNull Zti entity) {
         return TEXTURE;
     }
 

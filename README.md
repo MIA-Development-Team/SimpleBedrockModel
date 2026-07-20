@@ -43,7 +43,7 @@ dependencies {
 }
 ```
 
-#### Minecraft 1.21.1 (NeoForge)
+#### Minecraft 26.1 (NeoForge, Java 25)
 ```groovy
 repositories {
     maven {
@@ -55,9 +55,9 @@ repositories {
 }
 
 dependencies {
-    implementation jarJar("maven.modrinth:simplebedrockmodel:1.5.0-neoforge+mc1.21.1") {
+    implementation jarJar("maven.modrinth:simplebedrockmodel:2.5.0-neoforge-mc26.1") {
         version {
-            prefer '1.5.0-neoforge+1.21.1'
+            prefer '2.5.0-neoforge-mc26.1'
         }
     }
     // The animation library is already included in jar (jar in jar), 
@@ -147,7 +147,7 @@ model.renderToBuffer(poseStack, buffer, packedLight, packedOverlay);
 
 ```
 src/main/java/com/github/mcmodderanchor/simplebedrockmodel/
-├── v1/client/bedrock/
+├── v2/
 │   ├── model/           # Core model classes
 │   ├── animation/       # Animation system
 │   ├── pojo/           # Data transfer objects

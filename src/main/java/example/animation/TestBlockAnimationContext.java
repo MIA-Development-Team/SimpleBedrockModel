@@ -1,9 +1,9 @@
 package example.animation;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.BoneIndexProvider;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BedrockAnimationFile;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.time.AnimationClock;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.BoneIndexProvider;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.animation.BedrockAnimation;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.BedrockAnimationFile;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.time.AnimationClock;
 import com.maydaymemory.mae.basic.ArrayPoseBuilder;
 import com.maydaymemory.mae.basic.Keyframe;
 import com.maydaymemory.mae.basic.Pose;
@@ -15,7 +15,7 @@ import com.maydaymemory.mae.control.misc.RealtimeVelocityEstimatorNode;
 import com.maydaymemory.mae.control.runner.AnimationRunner;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
@@ -116,9 +116,9 @@ public class TestBlockAnimationContext implements Tickable {
             Level level = blockEntity.getLevel();
             if (level != null && !level.isClientSide) {
                 @SuppressWarnings("unchecked")
-                Iterable<Keyframe<ResourceLocation>> sounds = runner.clip(BedrockAnimation.SOUND_CHANNEL_NAME);
+                Iterable<Keyframe<Identifier>> sounds = runner.clip(BedrockAnimation.SOUND_CHANNEL_NAME);
                 if (sounds != null) {
-                    for (Keyframe<ResourceLocation> keyframe : sounds) {
+                    for (Keyframe<Identifier> keyframe : sounds) {
                         BlockPos pos = blockEntity.getBlockPos();
                         SoundEvent soundEvent = SoundEvent.createVariableRangeEvent(keyframe.getValue());
                         level.playSound(null, pos, soundEvent, SoundSource.BLOCKS);

@@ -1,7 +1,7 @@
 package com.github.mcmodderanchor.simplebedrockmodel;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.network.NetworkHandler;
-import net.minecraft.resources.ResourceLocation;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.network.NetworkHandler;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -17,7 +17,7 @@ public class SimpleBedrockModel {
         modEventBus.addListener(NetworkHandler::register);
     }
 
-    public static ResourceLocation modLoc(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    public static Identifier modLoc(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 }

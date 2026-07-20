@@ -1,17 +1,17 @@
 package example.client.render.item;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.client.animation.IFPAnimationInstance;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.client.handler.FirstPersonRenderHandler;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.AbstractGeoItemRenderer;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.model.BedrockBone;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.model.BedrockModel;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.ParticleEffectData;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.event.RegisterBedrockModelReloadListenerEvent;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.data.ParticleEffectDefinition;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.firstperson.FirstPersonParticleSystem;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.render.CameraStateCache;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.resource.ParticleDefinitionLoader;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.runtime.ParticleEmitterInstance;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.animation.IFPAnimationInstance;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.handler.FirstPersonRenderHandler;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.AbstractGeoItemRenderer;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.BedrockBone;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.BedrockModel;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.ParticleEffectData;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.event.RegisterBedrockModelReloadListenerEvent;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.particle.data.ParticleEffectDefinition;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.particle.firstperson.FirstPersonParticleSystem;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.particle.render.CameraStateCache;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.particle.resource.ParticleDefinitionLoader;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.particle.runtime.ParticleEmitterInstance;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -26,12 +26,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -104,7 +104,7 @@ public class DeagleWithoutLevelRenderer extends AbstractGeoItemRenderer<BedrockM
 
     @Override
     @Nullable
-    public ResourceLocation getSlotTexture(ItemStack stack) {
+    public Identifier getSlotTexture(ItemStack stack) {
         return KnownResources.DEAGLE.withPrefix("item/");
     }
 

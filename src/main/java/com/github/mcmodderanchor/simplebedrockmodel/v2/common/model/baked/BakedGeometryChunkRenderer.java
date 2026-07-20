@@ -1,12 +1,11 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v2.client.compat.acceleratedrendering.AcceleratedRenderingCompat;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.compat.sodium.SodiumCompat;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
@@ -43,9 +42,6 @@ public class BakedGeometryChunkRenderer {
     public void renderQuadChunk(BakedGeometryChunk chunk, PoseStack poseStack, VertexConsumer consumer, int lightmap, int overlay,
                                 float red, float green, float blue, float alpha, boolean skipNormalVisibilityCull) {
         PoseStack.Pose pose = poseStack.last();
-        if (AcceleratedRenderingCompat.renderQuads(chunk, consumer, pose, lightmap, overlay, red, green, blue, alpha)) {
-            return;
-        }
         Matrix4f poseMatrix = pose.pose();
         Matrix3f normalMatrix = pose.normal();
         if (SodiumCompat.writeQuads(chunk, consumer, lightmap, overlay, red, green, blue, alpha, poseMatrix, normalMatrix, skipNormalVisibilityCull)) {
@@ -79,9 +75,6 @@ public class BakedGeometryChunkRenderer {
     public void renderVertexChunk(BakedGeometryChunk chunk, PoseStack poseStack, VertexConsumer consumer, int lightmap, int overlay,
                                   float red, float green, float blue, float alpha) {
         PoseStack.Pose pose = poseStack.last();
-        if (AcceleratedRenderingCompat.renderVertices(chunk, consumer, pose, lightmap, overlay, red, green, blue, alpha)) {
-            return;
-        }
         Matrix4f poseMatrix = pose.pose();
         Matrix3f normalMatrix = pose.normal();
         if (SodiumCompat.writeVertices(chunk, consumer, lightmap, overlay, red, green, blue, alpha, poseMatrix, normalMatrix)) {
@@ -114,7 +107,7 @@ public class BakedGeometryChunkRenderer {
     }
 
     private int packColor(float red, float green, float blue, float alpha) {
-        return FastColor.ARGB32.color(
+        return ARGB.color(
                 (int) (alpha * 255.0f),
                 (int) (red * 255.0f),
                 (int) (green * 255.0f),

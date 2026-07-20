@@ -6,13 +6,13 @@ import com.github.mcmodderanchor.simplebedrockmodel.v2.resource.BedrockModelReso
 import example.init.ExampleModRegister;
 import example.resource.InnerResourceLoader;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.ArmorMaterials;
+import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorMaterials;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -56,7 +56,7 @@ public class ExampleArmorItem extends ArmorItem {
                         this.renderer = new GeoArmorRendererV2(
                                 model,
                                 item.getEquipmentSlot(),
-                                ResourceLocation.fromNamespaceAndPath("example", "textures/armor/defender.png")
+                                Identifier.fromNamespaceAndPath("example", "textures/armor/defender.png")
                         );
                     }
 
@@ -68,13 +68,13 @@ public class ExampleArmorItem extends ArmorItem {
     }
 
     @Override
-    public @Nullable ResourceLocation getArmorTexture(
+    public @Nullable Identifier getArmorTexture(
             ItemStack stack,
             Entity entity,
             EquipmentSlot slot,
             ArmorMaterial.Layer layer,
             boolean innerModel
     ) {
-        return ResourceLocation.fromNamespaceAndPath("example", "textures/armor/defender.png");
+        return Identifier.fromNamespaceAndPath("example", "textures/armor/defender.png");
     }
 }

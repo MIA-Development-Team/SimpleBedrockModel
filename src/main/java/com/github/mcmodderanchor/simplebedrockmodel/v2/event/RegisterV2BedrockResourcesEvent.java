@@ -1,8 +1,8 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.event;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.resource.RawResourceLoader;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.resource.RawResourceLoaders;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.animation.BedrockAnimation;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.resource.RawResourceLoader;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.resource.RawResourceLoaders;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked.BakerOptions;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.resource.BedrockAnimationEntry;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.resource.BedrockAnimationFactory;
@@ -11,7 +11,7 @@ import com.github.mcmodderanchor.simplebedrockmodel.v2.resource.BedrockModelEntr
 import com.github.mcmodderanchor.simplebedrockmodel.v2.resource.BedrockModelResource;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.resource.ModelType;
 import com.google.common.collect.Maps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
@@ -25,9 +25,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class RegisterV2BedrockResourcesEvent extends Event implements IModBusEvent {
-    private final Map<ResourceLocation, BedrockModelEntry> modelRegistry;
-    private final Map<ResourceLocation, BedrockAnimationEntry> animationRegistry;
-    private final List<Consumer<Map<ResourceLocation, BedrockModelResource>>> reloadListeners;
+    private final Map<Identifier, BedrockModelEntry> modelRegistry;
+    private final Map<Identifier, BedrockAnimationEntry> animationRegistry;
+    private final List<Consumer<Map<Identifier, BedrockModelResource>>> reloadListeners;
     private final Dist dist;
 
     public RegisterV2BedrockResourcesEvent(Dist dist) {
@@ -37,49 +37,49 @@ public class RegisterV2BedrockResourcesEvent extends Event implements IModBusEve
         this.dist = dist;
     }
 
-    public ModelBuilder treeModel(ResourceLocation modelId) {
+    public ModelBuilder treeModel(Identifier modelId) {
         return treeModel(modelId, modelId);
     }
 
-    public ModelBuilder treeModel(ResourceLocation modelId, ResourceLocation sourceId) {
+    public ModelBuilder treeModel(Identifier modelId, Identifier sourceId) {
         return treeModel(modelId, sourceId, RawResourceLoaders.COMMON_LOADER);
     }
 
-    public ModelBuilder treeModel(ResourceLocation modelId, ResourceLocation sourceId, RawResourceLoader modelLoader) {
+    public ModelBuilder treeModel(Identifier modelId, Identifier sourceId, RawResourceLoader modelLoader) {
         return new ModelBuilder(modelId, sourceId, modelLoader, ModelType.TREE);
     }
 
-    public ModelBuilder bakedModel(ResourceLocation modelId) {
+    public ModelBuilder bakedModel(Identifier modelId) {
         return bakedModel(modelId, modelId);
     }
 
-    public ModelBuilder bakedModel(ResourceLocation modelId, ResourceLocation sourceId) {
+    public ModelBuilder bakedModel(Identifier modelId, Identifier sourceId) {
         return bakedModel(modelId, sourceId, RawResourceLoaders.COMMON_LOADER);
     }
 
-    public ModelBuilder bakedModel(ResourceLocation modelId, ResourceLocation sourceId, RawResourceLoader modelLoader) {
+    public ModelBuilder bakedModel(Identifier modelId, Identifier sourceId, RawResourceLoader modelLoader) {
         return new ModelBuilder(modelId, sourceId, modelLoader, ModelType.BAKED);
     }
 
     /**
-     * @deprecated Use {@link #bakedModel(ResourceLocation)} or {@link #treeModel(ResourceLocation)} to make the
+     * @deprecated Use {@link #bakedModel(Identifier)} or {@link #treeModel(Identifier)} to make the
      * runtime model type explicit.
      */
     @Deprecated
-    public ModelBuilder model(ResourceLocation modelId) {
+    public ModelBuilder model(Identifier modelId) {
         return bakedModel(modelId);
     }
 
     /**
-     * @deprecated Use {@link #bakedModel(ResourceLocation, ResourceLocation, RawResourceLoader)} or
-     * {@link #treeModel(ResourceLocation, ResourceLocation, RawResourceLoader)} to make the runtime model type explicit.
+     * @deprecated Use {@link #bakedModel(Identifier, Identifier, RawResourceLoader)} or
+     * {@link #treeModel(Identifier, Identifier, RawResourceLoader)} to make the runtime model type explicit.
      */
     @Deprecated
-    public ModelBuilder model(ResourceLocation modelId, RawResourceLoader modelLoader) {
+    public ModelBuilder model(Identifier modelId, RawResourceLoader modelLoader) {
         return bakedModel(modelId, modelId, modelLoader);
     }
 
-    public void onReload(Consumer<Map<ResourceLocation, BedrockModelResource>> listener) {
+    public void onReload(Consumer<Map<Identifier, BedrockModelResource>> listener) {
         reloadListeners.add(listener);
     }
 
@@ -87,28 +87,28 @@ public class RegisterV2BedrockResourcesEvent extends Event implements IModBusEve
         return dist;
     }
 
-    public Map<ResourceLocation, BedrockModelEntry> getModelRegistry() {
+    public Map<Identifier, BedrockModelEntry> getModelRegistry() {
         return modelRegistry;
     }
 
-    public Map<ResourceLocation, BedrockAnimationEntry> getAnimationRegistry() {
+    public Map<Identifier, BedrockAnimationEntry> getAnimationRegistry() {
         return animationRegistry;
     }
 
-    public List<Consumer<Map<ResourceLocation, BedrockModelResource>>> getReloadListeners() {
+    public List<Consumer<Map<Identifier, BedrockModelResource>>> getReloadListeners() {
         return reloadListeners;
     }
 
     public final class ModelBuilder {
-        private final ResourceLocation modelId;
-        private final ResourceLocation sourceId;
+        private final Identifier modelId;
+        private final Identifier sourceId;
         private final RawResourceLoader modelLoader;
         private final ModelType kind;
-        private final LinkedHashMap<ResourceLocation, AnimationRegistration> animations = new LinkedHashMap<>();
+        private final LinkedHashMap<Identifier, AnimationRegistration> animations = new LinkedHashMap<>();
         private Function<BedrockModelBakeContext, BakerOptions> optionsFactory;
         private boolean lazy;
 
-        private ModelBuilder(ResourceLocation modelId, ResourceLocation sourceId, RawResourceLoader modelLoader, ModelType kind) {
+        private ModelBuilder(Identifier modelId, Identifier sourceId, RawResourceLoader modelLoader, ModelType kind) {
             this.modelId = modelId;
             this.sourceId = sourceId;
             this.modelLoader = modelLoader;
@@ -129,15 +129,15 @@ public class RegisterV2BedrockResourcesEvent extends Event implements IModBusEve
             return this;
         }
 
-        public ModelBuilder animation(ResourceLocation animationId) {
+        public ModelBuilder animation(Identifier animationId) {
             return animation(animationId, RawResourceLoaders.COMMON_LOADER, BedrockAnimation::createAnimation);
         }
 
-        public ModelBuilder animation(ResourceLocation animationId, BedrockAnimationFactory factory) {
+        public ModelBuilder animation(Identifier animationId, BedrockAnimationFactory factory) {
             return animation(animationId, RawResourceLoaders.COMMON_LOADER, factory);
         }
 
-        public ModelBuilder animation(ResourceLocation animationId, RawResourceLoader animationLoader, BedrockAnimationFactory factory) {
+        public ModelBuilder animation(Identifier animationId, RawResourceLoader animationLoader, BedrockAnimationFactory factory) {
             animations.put(animationId, new AnimationRegistration(animationLoader, factory));
             return this;
         }
@@ -148,7 +148,7 @@ public class RegisterV2BedrockResourcesEvent extends Event implements IModBusEve
                     : context -> animations.isEmpty() ? BakerOptions.defaults() : context.optionsFromAnimations();
             modelRegistry.put(modelId, new BedrockModelEntry(
                     modelLoader, sourceId, kind, factory, new ArrayList<>(animations.keySet()), lazy));
-            for (Map.Entry<ResourceLocation, AnimationRegistration> entry : animations.entrySet()) {
+            for (Map.Entry<Identifier, AnimationRegistration> entry : animations.entrySet()) {
                 AnimationRegistration animation = entry.getValue();
                 animationRegistry.put(entry.getKey(), new BedrockAnimationEntry(
                         animation.loader(), modelId, animation.factory(), lazy, true));

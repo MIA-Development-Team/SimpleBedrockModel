@@ -1,11 +1,11 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.model.LocatorData;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.LocatorData;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree.TreeBedrockModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;

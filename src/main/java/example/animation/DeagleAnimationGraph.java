@@ -1,12 +1,12 @@
 package example.animation;
 
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.time.AnimationClock;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.time.AnimationClocks;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.model.BedrockModel;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.ParticleEffectData;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.event.RegisterBedrockAnimationReloadListenerEvent;
-import com.github.mcmodderanchor.simplebedrockmodel.v1.event.RegisterBedrockModelReloadListenerEvent;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.time.AnimationClock;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.time.AnimationClocks;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.animation.BedrockAnimation;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.BedrockModel;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.ParticleEffectData;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.event.RegisterBedrockAnimationReloadListenerEvent;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.event.RegisterBedrockModelReloadListenerEvent;
 import com.maydaymemory.mae.basic.ArrayClipChannel;
 import com.maydaymemory.mae.basic.ArrayPoseBuilder;
 import com.maydaymemory.mae.basic.Keyframe;
@@ -26,7 +26,7 @@ import com.maydaymemory.mae.control.montage.AnimationSegment;
 import com.maydaymemory.mae.control.montage.AnimationSegmentKeyframe;
 import com.maydaymemory.mae.control.montage.IAnimationNotify;
 import example.resource.KnownResources;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
@@ -224,10 +224,10 @@ public class DeagleAnimationGraph implements GunAnimationGraph {
         return EULER_ADDITIVE_BLENDER.blend(model.getBindPose(), animationPose);
     }
 
-    private void consumeSounds(Iterable<Keyframe<ResourceLocation>> sounds) {
+    private void consumeSounds(Iterable<Keyframe<Identifier>> sounds) {
         Player player = animationInstance.getPlayer();
         Level level = player.level();
-        for (Keyframe<ResourceLocation> keyframe : sounds) {
+        for (Keyframe<Identifier> keyframe : sounds) {
             SoundEvent soundEvent = SoundEvent.createVariableRangeEvent(keyframe.getValue());
             level.playSound(player, player, soundEvent, SoundSource.PLAYERS, 1.0f, 1.0f);
         }
