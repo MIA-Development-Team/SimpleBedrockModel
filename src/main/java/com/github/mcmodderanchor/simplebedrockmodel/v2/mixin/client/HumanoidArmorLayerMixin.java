@@ -32,6 +32,8 @@ public class HumanoidArmorLayerMixin {
         if (model instanceof ICustomArmorRenderer renderer) {
             // 自定义 Bedrock UV 不使用原版盔甲纹饰图集；纹饰 pass 在此跳过。
             if (sprite == null) {
+                // submitModel 原本会在绘制前调用 setupAnim；自定义几何必须在读取骨骼姿态前补做这一步。
+                model.setupAnim(state);
                 renderer.submitArmor(poseStack, collector, renderType, packedLight, packedOverlay, color);
             }
             return;
