@@ -9,7 +9,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.caffeinemc.mods.sodium.api.vertex.buffer.VertexBufferWriter;
 import net.caffeinemc.mods.sodium.api.vertex.format.common.EntityVertex;
-import net.caffeinemc.mods.sodium.client.render.vertex.VertexConsumerUtils;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
@@ -26,7 +25,7 @@ public class SodiumBakedChunkWriter implements ISodiumVertexWriter, ChunkVertexW
 
     public boolean writeQuads(BakedGeometryChunk chunk, VertexConsumer consumer, int lightmap, int overlay, float red, float green, float blue, float alpha,
                               Matrix4f finalPose, Matrix3f finalNormal, boolean skipNormalVisibilityCull) {
-        VertexBufferWriter writer = VertexConsumerUtils.convertOrLog(consumer);
+        VertexBufferWriter writer = VertexBufferWriter.tryOf(consumer);
         if (writer == null) {
             return false;
         }
@@ -35,7 +34,7 @@ public class SodiumBakedChunkWriter implements ISodiumVertexWriter, ChunkVertexW
 
     public boolean writeVertices(BakedGeometryChunk chunk, VertexConsumer consumer, int lightmap, int overlay, float red, float green, float blue, float alpha,
                                  Matrix4f finalPose, Matrix3f finalNormal) {
-        VertexBufferWriter writer = VertexConsumerUtils.convertOrLog(consumer);
+        VertexBufferWriter writer = VertexBufferWriter.tryOf(consumer);
         if (writer == null) {
             return false;
         }

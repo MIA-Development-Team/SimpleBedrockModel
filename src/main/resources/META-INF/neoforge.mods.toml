@@ -25,4 +25,11 @@ versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
+[[dependencies.${mod_id}]]
+modId = "sodium"
+type = "optional"
+versionRange = "[0.9.1,)"
+ordering = "NONE"
+side = "CLIENT"
+
 

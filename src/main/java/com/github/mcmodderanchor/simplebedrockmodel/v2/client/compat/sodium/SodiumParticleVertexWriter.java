@@ -3,7 +3,6 @@ package com.github.mcmodderanchor.simplebedrockmodel.v2.client.compat.sodium;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.caffeinemc.mods.sodium.api.vertex.buffer.VertexBufferWriter;
 import net.caffeinemc.mods.sodium.api.vertex.format.common.ParticleVertex;
-import net.caffeinemc.mods.sodium.client.render.vertex.VertexConsumerUtils;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
@@ -23,7 +22,7 @@ public final class SodiumParticleVertexWriter {
                                     float x3, float y3, float z3, float u3, float v3,
                                     float r, float g, float b, float a,
                                     int light) {
-        VertexBufferWriter writer = VertexConsumerUtils.convertOrLog(consumer);
+        VertexBufferWriter writer = VertexBufferWriter.tryOf(consumer);
         if (writer == null) {
             return false;
         }

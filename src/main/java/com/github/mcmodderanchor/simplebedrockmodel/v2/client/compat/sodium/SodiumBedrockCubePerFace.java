@@ -6,7 +6,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.caffeinemc.mods.sodium.api.vertex.buffer.VertexBufferWriter;
-import net.caffeinemc.mods.sodium.client.render.vertex.VertexConsumerUtils;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -17,7 +16,7 @@ public class SodiumBedrockCubePerFace extends BedrockCubePerFace implements ISod
 
     @Override
     public void compile(PoseStack.Pose pose, Vector3f[] normals, VertexConsumer consumer, int lightmap, int overlay, float r, float g, float b, float a) {
-        VertexBufferWriter writer = VertexConsumerUtils.convertOrLog(consumer);
+        VertexBufferWriter writer = VertexBufferWriter.tryOf(consumer);
         if (writer == null) {
             super.compile(pose, normals, consumer, lightmap, overlay, r, g, b, a);
             return;

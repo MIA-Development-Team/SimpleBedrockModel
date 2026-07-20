@@ -63,24 +63,9 @@ sourceSets.main.resources {
 
 sourceSets.main.java {
     exclude 'com/github/mcmodderanchor/simplebedrockmodel/v2/particle/debug/**'
-    // Keep the focused 26.1 rendering fixture; legacy gameplay examples are not needed for render QA.
-    exclude 'example/animation/ClientMolangAnimationState.java'
-    exclude 'example/animation/DeagleAnimationGraph.java'
-    exclude 'example/animation/FPGunAnimationInstance.java'
-    exclude 'example/animation/GunAnimationGraph.java'
-    exclude 'example/animation/MolangTestAnimationContext.java'
-    exclude 'example/capability/**'
-    exclude 'example/client/event/ClientTicker.java'
-    exclude 'example/client/render/blockentity/BedrockModelBlockEntityRenderer.java'
-    exclude 'example/client/render/blockentity/TestBlockEntityRenderer.java'
-    exclude 'example/client/render/blockentity/V2TestBlockEntityRenderer.java'
-    exclude 'example/event/**'
-    exclude 'example/item/GunItem.java'
-    exclude 'example/resource/InnerResourceLoader.java'
 }
 
 configurations {
-    sodiumMod
     runtimeClasspath.extendsFrom localRuntime
 
     // 自定义一个 minecraftLibrary，方便引入需要 jarJar 的库
@@ -121,9 +106,9 @@ repositories {
 }
 
 dependencies {
-    sodiumMod "net.caffeinemc:sodium-neoforge:0.9.1+mc26.1.2"
-    implementation "net.caffeinemc:sodium-neoforge:0.9.1+mc26.1.2"
-    compileOnly files(layout.buildDirectory.dir('generated/sodiumApiClasses'))
+    compileOnly "net.caffeinemc:sodium-neoforge-api:${sodiumVersion}"
+    localRuntime "net.caffeinemc:sodium-neoforge:${sodiumVersion}"
+
     mcLib jarJar("com.maydaymemory:mae:1.1.4") {
         exclude group: 'com.google.code.gson', module: 'gson'
         exclude group: 'com.google.code.findbugs', module: 'jsr305'
@@ -269,22 +254,4 @@ tasks.register("runWithRenderDoc", Exec) {
         }.join(" ")
         println "================================="
     }
-}
-
-tasks.register('extractSodiumApi', Copy) {
-    from({ zipTree(configurations.sodiumMod.singleFile) }) {
-        include 'META-INF/jarjar/*-mod.jar'
-        rename { 'sodium-api.jar' }
-    }
-    into layout.buildDirectory.dir('generated/sodiumApi')
-}
-
-tasks.register('extractSodiumApiClasses', Copy) {
-    dependsOn tasks.named('extractSodiumApi')
-    from({ zipTree(layout.buildDirectory.file('generated/sodiumApi/META-INF/jarjar/sodium-api.jar').get().asFile) })
-    into layout.buildDirectory.dir('generated/sodiumApiClasses')
-}
-
-tasks.named('compileJava').configure {
-    dependsOn tasks.named('extractSodiumApiClasses')
 }

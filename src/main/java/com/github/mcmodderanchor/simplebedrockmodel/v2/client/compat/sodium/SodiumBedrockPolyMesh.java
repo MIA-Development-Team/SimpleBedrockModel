@@ -7,7 +7,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.caffeinemc.mods.sodium.api.vertex.buffer.VertexBufferWriter;
-import net.caffeinemc.mods.sodium.client.render.vertex.VertexConsumerUtils;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
@@ -18,7 +17,7 @@ public class SodiumBedrockPolyMesh extends BedrockPolyMesh implements ISodiumVer
 
     @Override
     public void compileTriangles(PoseStack.Pose pose, VertexConsumer consumer, int lightmap, int overlay, float red, float green, float blue, float alpha) {
-        VertexBufferWriter writer = VertexConsumerUtils.convertOrLog(consumer);
+        VertexBufferWriter writer = VertexBufferWriter.tryOf(consumer);
         if (writer == null) {
             super.compileTriangles(pose, consumer, lightmap, overlay, red, green, blue, alpha);
             return;
