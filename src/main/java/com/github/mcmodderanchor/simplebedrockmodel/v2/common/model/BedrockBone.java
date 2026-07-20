@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.minecraft.util.LightCoordsUtil;
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -18,7 +17,6 @@ import org.joml.Vector3f;
 import java.util.Map;
 
 public class BedrockBone {
-    @OnlyIn(Dist.CLIENT)
     private static class ClientConstants {
         private static final Vector3f[] NORMALS = new Vector3f[6];
         private static final int MAX_LIGHT_TEXTURE = LightCoordsUtil.pack(15, 15);
@@ -51,29 +49,24 @@ public class BedrockBone {
     private boolean hasCubesInTree;
     private boolean hasMeshesInTree;
 
-    @OnlyIn(Dist.CLIENT)
     public void render(PoseStack poseStack, VertexConsumer consumer, int lightmap, int overlay) {
         this.render(poseStack, consumer, lightmap, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void render(PoseStack poseStack, VertexConsumer consumer, int lightmap, int overlay, float red, float green, float blue, float alpha) {
         this.renderGeometryPass(poseStack, consumer, lightmap, overlay, red, green, blue, alpha, false);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderCubes(PoseStack poseStack, VertexConsumer quadConsumer, int lightmap, int overlay,
                             float red, float green, float blue, float alpha) {
         this.renderGeometryPass(poseStack, quadConsumer, lightmap, overlay, red, green, blue, alpha, false);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderMeshes(PoseStack poseStack, VertexConsumer triangleConsumer, int lightmap, int overlay,
                              float red, float green, float blue, float alpha) {
         this.renderGeometryPass(poseStack, triangleConsumer, lightmap, overlay, red, green, blue, alpha, true);
     }
 
-    @OnlyIn(Dist.CLIENT)
     private void renderGeometryPass(PoseStack poseStack, VertexConsumer consumer, int lightmap, int overlay,
                                     float red, float green, float blue, float alpha, boolean meshesPass) {
         if (!this.hasGeometryInTree(meshesPass)) {
@@ -144,7 +137,6 @@ public class BedrockBone {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private void compile(PoseStack.Pose pose, VertexConsumer consumer, int lightmap, int overlay, float red, float green, float blue, float alpha) {
         Matrix3f normal = pose.normal();
         ClientConstants.NORMALS[0].set(-normal.m10, -normal.m11, -normal.m12);
@@ -158,7 +150,6 @@ public class BedrockBone {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private void compileMeshes(PoseStack.Pose pose, VertexConsumer consumer, int lightmap, int overlay, float red, float green, float blue, float alpha) {
         for (BedrockMesh mesh : this.meshes) {
             mesh.compileTriangles(pose, consumer, lightmap, overlay, red, green, blue, alpha);

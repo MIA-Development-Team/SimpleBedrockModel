@@ -9,7 +9,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -23,42 +22,35 @@ public class BakedModelInstance extends BoneTreeInstance {
     public BakedModelInstance(BakedBedrockModel baseModel) {
         super(baseModel.bones(), baseModel.getBindPose());
         this.baseModel = baseModel;
-    }
-
+}
     public BakedBedrockModel baseModel() {
         return baseModel;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay) {
         baseModel.renderToBuffer(this, poseStack, buffer, packedLight, packedOverlay);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay,
                                float red, float green, float blue, float alpha) {
         renderToBuffer(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha, false);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay,
                                float red, float green, float blue, float alpha, boolean skipNormalVisibilityCull) {
         baseModel.renderToBuffer(this, poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha, skipNormalVisibilityCull);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderToBuffer(PoseStack poseStack, MultiBufferSource bufferSource, RenderType quadRenderType,
                                RenderType triangleRenderType, int packedLight, int packedOverlay) {
         baseModel.renderToBuffer(this, poseStack, bufferSource, quadRenderType, triangleRenderType, packedLight, packedOverlay);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderToBuffer(PoseStack poseStack, MultiBufferSource bufferSource, RenderType quadRenderType,
                                RenderType triangleRenderType, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         renderToBuffer(poseStack, bufferSource, quadRenderType, triangleRenderType, packedLight, packedOverlay, red, green, blue, alpha, false);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderToBuffer(PoseStack poseStack, MultiBufferSource bufferSource, RenderType quadRenderType,
                                RenderType triangleRenderType, int packedLight, int packedOverlay, float red, float green, float blue, float alpha,
                                boolean skipNormalVisibilityCull) {

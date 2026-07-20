@@ -42,7 +42,7 @@ public class MolangEntityContext<T extends Entity> extends MolangContext<T> {
     @QueryBinding("is_in_water_or_rain")
     public double isInWaterOrRain() {
         T e = getEntity();
-        return e != null && e.isInWaterRainOrBubble() ? 1.0 : 0.0;
+        return e != null && e.isInWaterOrRain() ? 1.0 : 0.0;
     }
 
     @QueryBinding("is_in_lava")
@@ -144,7 +144,7 @@ public class MolangEntityContext<T extends Entity> extends MolangContext<T> {
     @QueryBinding("time_of_day")
     public double timeOfDay() {
         T e = getEntity();
-        return e != null ? (double) e.level().getDayTime() % 24000 : 0.0;
+        return e != null ? (double) e.level().getGameTime() % 24000 : 0.0;
     }
 
     @QueryBinding("time_stamp")
@@ -156,13 +156,13 @@ public class MolangEntityContext<T extends Entity> extends MolangContext<T> {
     @QueryBinding("is_day")
     public double isDay() {
         T e = getEntity();
-        return e != null && e.level().isDay() ? 1.0 : 0.0;
+        return e != null && e.level().getGameTime() % 24000 < 13000 ? 1.0 : 0.0;
     }
 
     @QueryBinding("is_night")
     public double isNight() {
         T e = getEntity();
-        return e != null && e.level().isNight() ? 1.0 : 0.0;
+        return e != null && e.level().getGameTime() % 24000 >= 13000 ? 1.0 : 0.0;
     }
 
     @QueryBinding("is_raining")
@@ -180,6 +180,6 @@ public class MolangEntityContext<T extends Entity> extends MolangContext<T> {
     @QueryBinding("moon_phase")
     public double moonPhase() {
         T e = getEntity();
-        return e != null ? (double) e.level().getMoonPhase() : 0.0;
+        return e != null ? (double) ((e.level().getGameTime() / 24000L) % 8L) : 0.0;
     }
 }

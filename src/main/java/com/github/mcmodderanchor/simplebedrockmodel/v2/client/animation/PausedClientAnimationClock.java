@@ -3,12 +3,10 @@ package com.github.mcmodderanchor.simplebedrockmodel.v2.client.animation;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.time.AnimationClock;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 /**
  * 客户端自动暂停时钟的实现
  */
-@OnlyIn(Dist.CLIENT)
 public final class PausedClientAnimationClock implements AnimationClock {
     private static final PausedClientAnimationClock INSTANCE = new PausedClientAnimationClock();
 
@@ -20,8 +18,7 @@ public final class PausedClientAnimationClock implements AnimationClock {
 
     public static PausedClientAnimationClock getInstance() {
         return INSTANCE;
-    }
-
+}
     public void update() {
         long realNow = System.nanoTime();
         if (!initialized) {

@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -19,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Billboard quad 构建工具。
  */
-@OnlyIn(Dist.CLIENT)
 public final class BillboardHelper {
 
     // 可复用的临时变量，避免每个粒子渲染时分配新对象
@@ -58,8 +56,7 @@ public final class BillboardHelper {
             effectivePose = TEMP_POSE.set(pose).mul(emitterTransform);
         } else {
             effectivePose = pose;
-        }
-
+}
         // 用 effectivePose 把粒子坐标变换到视图空间
         TEMP_VIEW_POS.set(particle.x, particle.y, particle.z, 1);
         effectivePose.transform(TEMP_VIEW_POS);

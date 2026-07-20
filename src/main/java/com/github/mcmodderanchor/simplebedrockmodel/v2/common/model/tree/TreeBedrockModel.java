@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -42,8 +41,7 @@ public class TreeBedrockModel implements BoneIndexProvider {
         this.locatorByName = Map.copyOf(locatorByName);
         this.bindPose = bindPose;
         this.renderBoundingBox = renderBoundingBox;
-    }
-
+}
     public static TreeBedrockModel bake(BedrockModelPOJO pojo) {
         return TreeBedrockModelBaker.bake(pojo);
     }
@@ -90,37 +88,31 @@ public class TreeBedrockModel implements BoneIndexProvider {
         return roots.toArray(TreeBoneDefinition[]::new);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderToBuffer(TreeModelInstance instance, PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay) {
         renderToBuffer(instance, poseStack, buffer, packedLight, packedOverlay, 1, 1, 1, 1);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderToBuffer(TreeModelInstance instance, PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay,
                                float red, float green, float blue, float alpha) {
         renderToBuffer(instance, poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha, false);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderToBuffer(TreeModelInstance instance, PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay,
                                float red, float green, float blue, float alpha, boolean skipNormalVisibilityCull) {
         renderBoneTree(instance, poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha, true, skipNormalVisibilityCull);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderToBuffer(TreeModelInstance instance, PoseStack poseStack, MultiBufferSource bufferSource, RenderType quadRenderType,
                                RenderType triangleRenderType, int packedLight, int packedOverlay) {
         renderToBuffer(instance, poseStack, bufferSource, quadRenderType, triangleRenderType, packedLight, packedOverlay, 1, 1, 1, 1);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderToBuffer(TreeModelInstance instance, PoseStack poseStack, MultiBufferSource bufferSource, RenderType quadRenderType,
                                RenderType triangleRenderType, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         renderToBuffer(instance, poseStack, bufferSource, quadRenderType, triangleRenderType, packedLight, packedOverlay,
                 red, green, blue, alpha, false);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderToBuffer(TreeModelInstance instance, PoseStack poseStack, MultiBufferSource bufferSource, RenderType quadRenderType,
                                RenderType triangleRenderType, int packedLight, int packedOverlay, float red, float green, float blue, float alpha,
                                boolean skipNormalVisibilityCull) {
@@ -128,14 +120,12 @@ public class TreeBedrockModel implements BoneIndexProvider {
         renderBoneTree(instance, poseStack, bufferSource.getBuffer(triangleRenderType), packedLight, packedOverlay, red, green, blue, alpha, false, skipNormalVisibilityCull);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderBoneTree(TreeModelInstance instance, PoseStack poseStack, VertexConsumer consumer,
                                int packedLight, int packedOverlay, float red, float green, float blue, float alpha,
                                boolean quadsPass) {
         renderBoneTree(instance, poseStack, consumer, packedLight, packedOverlay, red, green, blue, alpha, quadsPass, false);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderBoneTree(TreeModelInstance instance, PoseStack poseStack, VertexConsumer consumer,
                                int packedLight, int packedOverlay, float red, float green, float blue, float alpha,
                                boolean quadsPass, boolean skipNormalVisibilityCull) {
@@ -146,14 +136,12 @@ public class TreeBedrockModel implements BoneIndexProvider {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderBone(TreeModelInstance instance, int boneIndex, PoseStack poseStack, VertexConsumer consumer,
                            int packedLight, int packedOverlay, float red, float green, float blue, float alpha,
                            boolean quadsPass) {
         renderBone(instance, boneIndex, poseStack, consumer, packedLight, packedOverlay, red, green, blue, alpha, quadsPass, false);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void renderBone(TreeModelInstance instance, int boneIndex, PoseStack poseStack, VertexConsumer consumer,
                            int packedLight, int packedOverlay, float red, float green, float blue, float alpha,
                            boolean quadsPass, boolean skipNormalVisibilityCull) {
@@ -178,7 +166,6 @@ public class TreeBedrockModel implements BoneIndexProvider {
         poseStack.popPose();
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void renderBoneCubes(TreeBoneDefinition def, PoseStack.Pose pose, VertexConsumer consumer,
                                         int light, int overlay, float red, float green, float blue, float alpha,
                                         boolean skipNormalVisibilityCull) {
@@ -187,7 +174,6 @@ public class TreeBedrockModel implements BoneIndexProvider {
         TreeGeometryWriter.writeCubes(cubes, consumer, pose.pose(), pose.normal(), light, overlay, red, green, blue, alpha, skipNormalVisibilityCull);
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void renderBonePolyMeshes(TreeBoneDefinition def, PoseStack.Pose pose, VertexConsumer consumer,
                                              int light, int overlay, float red, float green, float blue, float alpha) {
         PolyMesh[] polyMeshes = def.polyMeshes();

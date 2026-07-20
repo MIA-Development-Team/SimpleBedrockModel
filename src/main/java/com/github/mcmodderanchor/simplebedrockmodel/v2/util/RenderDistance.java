@@ -2,10 +2,8 @@ package com.github.mcmodderanchor.simplebedrockmodel.v2.util;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 
-@OnlyIn(Dist.CLIENT)
 public final class RenderDistance {
     private static long GUI_RENDER_TIMESTAMP = -1L;
 

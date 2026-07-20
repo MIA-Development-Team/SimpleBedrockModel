@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +21,6 @@ import java.util.List;
  * <p>
  * 世界空间粒子由原版 {@code ParticleEngine} 渲染，不经过此渲染器。
  */
-@OnlyIn(Dist.CLIENT)
 public final class ParticleRenderer {
 
     private ParticleRenderer() {}

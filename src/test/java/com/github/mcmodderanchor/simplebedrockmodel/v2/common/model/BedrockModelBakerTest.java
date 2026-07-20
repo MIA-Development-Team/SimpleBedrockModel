@@ -135,7 +135,7 @@ class BedrockModelBakerTest {
         assertEquals(1, root.cubes().length);
         assertInstanceOf(CubeBox.class, root.cubes()[0]);
         assertTrue(root.cubes()[0].hasRotation());
-        assertNotNull(root.getOrCreateCache());
+        assertTrue(root.hasQuads());
     }
 
     @Test
@@ -167,7 +167,6 @@ class BedrockModelBakerTest {
         assertEquals(1, model.bones().length);
         assertEquals(1, meshBone.polyMeshes().length);
         assertTrue(meshBone.hasVertices());
-        assertNotNull(meshBone.getOrCreateCache());
     }
 
     private static void assertTaczFixture(String gunName, String foldedQueryBone) throws IOException {

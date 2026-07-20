@@ -6,10 +6,8 @@ import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.Face
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.resource.pojo.FaceUVsItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.world.entity.Entity;
 
-public class SlotModel extends EntityModel<Entity> {
+public class SlotModel {
     private static final FaceItem EMPTY = new FaceItem(new float[]{0f, 0f}, new float[]{0f, 0f});
     private static final FaceItem X16 = new FaceItem(new float[]{0f, 0f}, new float[]{16f, 16f});
     private static final FaceUVsItem SINGLE_SOUTH_X16 = new FaceUVsItem(EMPTY, EMPTY, EMPTY, X16, EMPTY, EMPTY);
@@ -29,11 +27,6 @@ public class SlotModel extends EntityModel<Entity> {
         this(false);
     }
 
-    @Override
-    public void setupAnim(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-    }
-
-    @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
         bone.render(poseStack, buffer, packedLight, packedOverlay);
     }

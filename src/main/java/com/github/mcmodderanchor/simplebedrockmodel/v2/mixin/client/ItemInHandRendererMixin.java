@@ -1,12 +1,8 @@
 package com.github.mcmodderanchor.simplebedrockmodel.v2.mixin.client;
 
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.handler.FirstPersonRenderHandler;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.ClientHooks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,37 +30,11 @@ public class ItemInHandRendererMixin {
      * NBT 变化无法即时反映到第一人称渲染。自定义物品需按 NBT 容忍语义判定为同一物品。
      * 非自定义物品回退到 vanilla {@code matches} 行为。
      */
-    @WrapOperation(
-            method = "tick",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;matches(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)Z")
-    )
-    private boolean sbm$matchesHeldItem(ItemStack a, ItemStack b, Operation<Boolean> original) {
-        if (FirstPersonRenderHandler.hasCustomRenderer(a) || FirstPersonRenderHandler.hasCustomRenderer(b)) {
-            return FirstPersonRenderHandler.isSameHeldItem(a, b);
-        }
-        return original.call(a, b);
-    }
-
     /**
      * 把 vanilla 的重新装备（下沉）判定替换为 NBT 容忍语义。
      * 自定义物品只要是同一持有物就不触发重装下沉动画（避免开火 NBT 变化引发抖动）；
      * 非自定义物品回退到 Forge 原判定。
      */
-    @WrapOperation(
-            method = "tick",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/neoforged/neoforge/client/ClientHooks;shouldCauseReequipAnimation(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;I)Z",
-                    remap = false
-            )
-    )
-    private boolean sbm$shouldReequip(ItemStack cached, ItemStack current, int slot, Operation<Boolean> original) {
-        if (FirstPersonRenderHandler.hasCustomRenderer(cached) || FirstPersonRenderHandler.hasCustomRenderer(current)) {
-            return !FirstPersonRenderHandler.isSameHeldItem(cached, current);
-        }
-        return original.call(cached, current, slot);
-    }
-
     /**
      * 收枪过渡期间钉住 vanilla 物品升降高度，屏蔽原版升降动画，让自定义收枪动画独占表现。
      * 按手分别处理：仅钉住正在过渡的那只手，另一只手保留 vanilla {@code tick()} 的正常推进。

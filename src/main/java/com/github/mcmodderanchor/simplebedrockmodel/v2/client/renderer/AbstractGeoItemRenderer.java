@@ -9,7 +9,6 @@ import com.maydaymemory.mae.basic.YXZRotationView;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -34,12 +33,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
  * @param <M> 基岩版模型
  */
 public abstract class AbstractGeoItemRenderer<M extends BedrockModel>
-        extends BlockEntityWithoutLevelRenderer implements IFPGeoItemRenderer {
+        implements IFPGeoItemRenderer {
     public static final String FP_CAMERA_BONE_NAME = "camera";
     private static final SlotModel SLOT_MODEL = new SlotModel();
 
     public AbstractGeoItemRenderer() {
-        super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
     }
 
     @Nullable
@@ -102,13 +100,12 @@ public abstract class AbstractGeoItemRenderer<M extends BedrockModel>
     }
 
     @ParametersAreNonnullByDefault
-    @Override
     public void renderByItem(ItemStack stack, ItemDisplayContext ctx, PoseStack poseStack, MultiBufferSource bufferSource,
                              int light, int overlay) {
         if (ctx.firstPerson()) {
             return;
         }
-        render(stack, ctx, poseStack, bufferSource, light, overlay, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true));
+        render(stack, ctx, poseStack, bufferSource, light, overlay, Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true));
     }
 
     protected void render(ItemStack stack, ItemDisplayContext ctx, PoseStack poseStack, MultiBufferSource bufferSource,

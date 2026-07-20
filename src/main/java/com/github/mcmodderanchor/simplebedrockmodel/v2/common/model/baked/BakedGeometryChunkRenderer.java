@@ -7,12 +7,10 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.util.ARGB;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-@OnlyIn(Dist.CLIENT)
 public class BakedGeometryChunkRenderer {
     public static final BakedGeometryChunkRenderer INSTANCE = new BakedGeometryChunkRenderer();
 
@@ -22,8 +20,7 @@ public class BakedGeometryChunkRenderer {
     public void render(BakedGeometryChunk chunk, PoseStack poseStack, VertexConsumer quadConsumer, VertexConsumer triangleConsumer,
                        int lightmap, int overlay, float red, float green, float blue, float alpha) {
         render(chunk, poseStack, quadConsumer, triangleConsumer, lightmap, overlay, red, green, blue, alpha, false);
-    }
-
+}
     public void render(BakedGeometryChunk chunk, PoseStack poseStack, VertexConsumer quadConsumer, VertexConsumer triangleConsumer,
                        int lightmap, int overlay, float red, float green, float blue, float alpha, boolean skipNormalVisibilityCull) {
         if (chunk.hasQuads()) {

@@ -75,7 +75,7 @@ public class CameraEventHandler {
         }
         var instance = FirstPersonRenderHandler.getActiveAnimationInstanceForCamera();
 
-        if (instance != null && IClientItemExtensions.of(instance.currentItem()).getCustomRenderer() instanceof IFPGeoItemRenderer renderer) {
+        if (instance != null && IFPGeoItemRenderer.find(instance.currentItem()).orElse(null) instanceof IFPGeoItemRenderer renderer) {
             event.setCanceled(renderer.blockViewBobbing());
         }
     }
@@ -91,7 +91,7 @@ public class CameraEventHandler {
         }
         var instance = FirstPersonRenderHandler.getActiveAnimationInstanceForCamera();
 
-        if (instance != null && IClientItemExtensions.of(instance.currentItem()).getCustomRenderer() instanceof IFPGeoItemRenderer renderer) {
+        if (instance != null && IFPGeoItemRenderer.find(instance.currentItem()).orElse(null) instanceof IFPGeoItemRenderer renderer) {
             renderer.applyLevelCameraAnimation(event, instance.currentItem(), instance.getCameraRotation(), (float) event.getPartialTick());
         }
     }
@@ -107,7 +107,7 @@ public class CameraEventHandler {
         }
         var instance = FirstPersonRenderHandler.getActiveAnimationInstanceForCamera();
 
-        if (instance != null && IClientItemExtensions.of(instance.currentItem()).getCustomRenderer() instanceof IFPGeoItemRenderer renderer) {
+        if (instance != null && IFPGeoItemRenderer.find(instance.currentItem()).orElse(null) instanceof IFPGeoItemRenderer renderer) {
             renderer.applyItemInHandCameraAnimation(event.getPoseStack(), instance.currentItem(), instance.getCameraRotation(), event.getPartialTick());
         }
     }

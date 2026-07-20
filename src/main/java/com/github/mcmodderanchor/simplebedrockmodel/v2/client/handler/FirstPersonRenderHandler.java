@@ -10,6 +10,9 @@ import com.github.mcmodderanchor.simplebedrockmodel.v2.particle.render.CameraSta
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -372,15 +375,12 @@ public class FirstPersonRenderHandler {
         // 更新该手粒子发射器变换（主副手各自在自己的 pass 内捕获基准、绑定枪口）。
         renderer.updateParticleEmitterTransforms(PARTICLE_SYSTEM, event.getPoseStack(), hand);
 
-        renderer.renderFirstPerson(
-                player,
-                stack,
-                transformType,
-                event.getPoseStack(),
-                event.getMultiBufferSource(),
-                event.getPackedLight(),
-                event.getPartialTick()
-        );
+        try (ByteBufferBuilder builder = new ByteBufferBuilder(RenderType.BIG_BUFFER_SIZE)) {
+            MultiBufferSource.BufferSource buffers = MultiBufferSource.immediate(builder);
+            renderer.renderFirstPerson(player, stack, transformType, event.getPoseStack(), buffers,
+                    event.getPackedLight(), event.getPartialTick());
+            buffers.endBatch();
+        }
         event.setCanceled(true);
 
         renderParticlesIfAny(event);
@@ -402,14 +402,12 @@ public class FirstPersonRenderHandler {
         float cameraRollRad = CameraStateCache.getCameraRollRadians();
         Matrix4f cameraRotation = buildCameraRotation(camera, cameraRollRad);
 
-        PARTICLE_SYSTEM.render(
-                event.getHand(),
-                event.getPoseStack(),
-                event.getMultiBufferSource(),
-                event.getPackedLight(),
-                event.getPartialTick(),
-                cameraPitchRad, cameraRollRad, cameraRotation
-        );
+        try (ByteBufferBuilder builder = new ByteBufferBuilder(RenderType.BIG_BUFFER_SIZE)) {
+            MultiBufferSource.BufferSource buffers = MultiBufferSource.immediate(builder);
+            PARTICLE_SYSTEM.render(event.getHand(), event.getPoseStack(), buffers,
+                    event.getPackedLight(), event.getPartialTick(), cameraPitchRad, cameraRollRad, cameraRotation);
+            buffers.endBatch();
+        }
     }
 
     /**
@@ -529,10 +527,7 @@ public class FirstPersonRenderHandler {
         if (stack.isEmpty()) {
             return Optional.empty();
         }
-        if (IClientItemExtensions.of(stack.getItem()).getCustomRenderer() instanceof IFPGeoItemRenderer renderer) {
-            return Optional.of(renderer);
-        }
-        return Optional.empty();
+        return IFPGeoItemRenderer.find(stack);
     }
 
     private static boolean isSameItemStacks(ItemStack oldStack, ItemStack newStack) {

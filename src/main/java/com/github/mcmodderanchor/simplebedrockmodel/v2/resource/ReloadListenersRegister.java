@@ -5,12 +5,11 @@ import com.github.mcmodderanchor.simplebedrockmodel.v2.event.RegisterBedrockAnim
 import com.github.mcmodderanchor.simplebedrockmodel.v2.event.RegisterBedrockAnimationReloadListenerEvent;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.event.RegisterBedrockModelEvent;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.event.RegisterBedrockModelReloadListenerEvent;
-import com.github.mcmodderanchor.simplebedrockmodel.v2.particle.resource.ParticleDefinitionLoader;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.event.RegisterV2BedrockResourcesEvent;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.particle.resource.ParticleDefinitionLoader;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.resource.BedrockAnimationResources;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.resource.BedrockModelResources;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,7 +17,6 @@ import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.EventBusSubscriber;
 
 public class ReloadListenersRegister {
-    @OnlyIn(Dist.CLIENT)
     @EventBusSubscriber(modid = SimpleBedrockModel.MOD_ID, value = Dist.CLIENT)
     public static class BedrockModelClientRegister {
         @SubscribeEvent
@@ -43,15 +41,14 @@ public class ReloadListenersRegister {
             BedrockModelResources.INSTANCE = new BedrockModelResources(event5.getModelRegistry(), event5.getReloadListeners());
 
 
-            event.registerReloadListener(BedrockModelResourceSet.INSTANCE);
-            event.registerReloadListener(BedrockAnimationResourceSet.INSTANCE);
-            event.registerReloadListener(BedrockAnimationResources.INSTANCE);
-            event.registerReloadListener(BedrockModelResources.INSTANCE);
-            event.registerReloadListener(ParticleDefinitionLoader.getInstance());
+            event.addListener(SimpleBedrockModel.modLoc("legacy_models"), BedrockModelResourceSet.INSTANCE);
+            event.addListener(SimpleBedrockModel.modLoc("legacy_animations"), BedrockAnimationResourceSet.INSTANCE);
+            event.addListener(SimpleBedrockModel.modLoc("animations"), BedrockAnimationResources.INSTANCE);
+            event.addListener(SimpleBedrockModel.modLoc("models"), BedrockModelResources.INSTANCE);
+            event.addListener(SimpleBedrockModel.modLoc("particles"), ParticleDefinitionLoader.getInstance());
         }
     }
 
-    @OnlyIn(Dist.DEDICATED_SERVER)
     @EventBusSubscriber(modid = SimpleBedrockModel.MOD_ID, value = Dist.DEDICATED_SERVER)
     public static class BedrockModelServerRegister {
         @SubscribeEvent
@@ -76,10 +73,10 @@ public class ReloadListenersRegister {
             BedrockModelResources.INSTANCE = new BedrockModelResources(event5.getModelRegistry(), event5.getReloadListeners());
 
 
-            event.addListener(BedrockModelResourceSet.INSTANCE);
-            event.addListener(BedrockAnimationResourceSet.INSTANCE);
-            event.addListener(BedrockAnimationResources.INSTANCE);
-            event.addListener(BedrockModelResources.INSTANCE);
+            event.addListener(SimpleBedrockModel.modLoc("legacy_models"), BedrockModelResourceSet.INSTANCE);
+            event.addListener(SimpleBedrockModel.modLoc("legacy_animations"), BedrockAnimationResourceSet.INSTANCE);
+            event.addListener(SimpleBedrockModel.modLoc("animations"), BedrockAnimationResources.INSTANCE);
+            event.addListener(SimpleBedrockModel.modLoc("models"), BedrockModelResources.INSTANCE);
         }
     }
 }

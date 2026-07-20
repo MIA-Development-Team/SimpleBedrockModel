@@ -63,6 +63,7 @@ sourceSets.main.resources {
 
 sourceSets.main.java {
     exclude 'example/**'
+    exclude 'com/github/mcmodderanchor/simplebedrockmodel/v2/particle/debug/**'
 }
 
 configurations {
@@ -107,8 +108,8 @@ repositories {
 }
 
 dependencies {
-    sodiumMod "net.caffeinemc:sodium-neoforge:0.8.9+mc26.1.1"
-    implementation "net.caffeinemc:sodium-neoforge:0.8.9+mc26.1.1"
+    sodiumMod "net.caffeinemc:sodium-neoforge:0.9.1+mc26.1.2"
+    implementation "net.caffeinemc:sodium-neoforge:0.9.1+mc26.1.2"
     compileOnly files(layout.buildDirectory.dir('generated/sodiumApiClasses'))
     mcLib jarJar("com.maydaymemory:mae:1.1.4") {
         exclude group: 'com.google.code.gson', module: 'gson'
@@ -118,7 +119,6 @@ dependencies {
     }
 
     api 'org.ow2.asm:asm:9.8'
-    runtimeOnly "curse.maven:configured-457570:7276577"
 
     // 测试用兼容模组：发布时仍保持可选依赖。
 

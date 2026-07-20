@@ -4,6 +4,10 @@ import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.IFPArmorH
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.resources.model.EquipmentClientInfo;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
@@ -26,7 +30,7 @@ public class FirstPersonArmorHandler {
     private static HumanoidModel<?> getDefaultModel() {
         if (defaultModel == null) {
             defaultModel = new HumanoidModel<>(
-                    Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.PLAYER_INNER_ARMOR)
+                    Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.PLAYER_ARMOR.chest())
             );
         }
         return defaultModel;
@@ -41,15 +45,13 @@ public class FirstPersonArmorHandler {
         if (chestStack.isEmpty()) return;
 
         IClientItemExtensions ext = IClientItemExtensions.of(chestStack.getItem());
-        var model = ext.getHumanoidArmorModel(player, chestStack, EquipmentSlot.CHEST, getDefaultModel());
+        var model = ext.getHumanoidArmorModel(chestStack, EquipmentClientInfo.LayerType.HUMANOID, getDefaultModel());
         if (!(model instanceof IFPArmorHandRenderer armorRenderer)) return;
 
-        armorRenderer.renderFirstPersonArmorArm(
-                player,
-                arm,
-                event.getPoseStack(),
-                event.getMultiBufferSource(),
-                event.getPackedLight()
-        );
+        try (ByteBufferBuilder builder = new ByteBufferBuilder(RenderType.BIG_BUFFER_SIZE)) {
+            MultiBufferSource.BufferSource buffers = MultiBufferSource.immediate(builder);
+            armorRenderer.renderFirstPersonArmorArm(player, arm, event.getPoseStack(), buffers, event.getPackedLight());
+            buffers.endBatch();
+        }
     }
 }

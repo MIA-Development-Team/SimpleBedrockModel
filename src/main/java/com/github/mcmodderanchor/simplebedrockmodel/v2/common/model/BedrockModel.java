@@ -18,7 +18,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.*;
 
 import org.jetbrains.annotations.Nullable;
@@ -57,8 +56,7 @@ public class BedrockModel implements Skeleton, BoneIndexProvider {
             loadNewModel(pojo);
         }
         bindingPose = initializeBindingPose();
-    }
-
+}
     protected Pose initializeBindingPose() {
         PoseBuilder poseBuilder = new ArrayPoseBuilder();
         for (int i = 0; i < boneIndex.size(); i++) {
@@ -145,13 +143,11 @@ public class BedrockModel implements Skeleton, BoneIndexProvider {
         return new BedrockPolyMesh(polyMesh, part, texWidth, texHeight);
     }
 
-    @OnlyIn(Dist.CLIENT)
     @ParametersAreNonnullByDefault
     public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay) {
         root.render(poseStack, buffer, packedLight, packedOverlay);
     }
 
-    @OnlyIn(Dist.CLIENT)
     @ParametersAreNonnullByDefault
     public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         root.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
@@ -167,7 +163,6 @@ public class BedrockModel implements Skeleton, BoneIndexProvider {
      * @param packedLight
      * @param packedOverlay
      */
-    @OnlyIn(Dist.CLIENT)
     @ParametersAreNonnullByDefault
     public void renderToBuffer(PoseStack poseStack, MultiBufferSource bufferSource, RenderType quadRenderType, RenderType triangleRenderType,
                                int packedLight, int packedOverlay) {
@@ -175,7 +170,6 @@ public class BedrockModel implements Skeleton, BoneIndexProvider {
                 1.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    @OnlyIn(Dist.CLIENT)
     @ParametersAreNonnullByDefault
     public void renderToBuffer(PoseStack poseStack, MultiBufferSource bufferSource, RenderType quadRenderType, RenderType triangleRenderType,
                                int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {

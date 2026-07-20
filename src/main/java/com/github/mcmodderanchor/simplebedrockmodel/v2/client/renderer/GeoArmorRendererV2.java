@@ -11,6 +11,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -28,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * 基于 Tree 模型的实例盔甲渲染器。
  */
-public class GeoArmorRendererV2 extends HumanoidModel<LivingEntity> implements IFPArmorHandRenderer, ICustomArmorRenderer {
+public class GeoArmorRendererV2 extends HumanoidModel<HumanoidRenderState> implements IFPArmorHandRenderer, ICustomArmorRenderer {
     protected final TreeBedrockModel model;
     protected final TreeArmorModelInstance instance;
     private final EquipmentSlot armorSlot;
@@ -48,7 +49,7 @@ public class GeoArmorRendererV2 extends HumanoidModel<LivingEntity> implements I
     }
 
     public GeoArmorRendererV2(TreeBedrockModel model, TreeArmorModelInstance instance, EquipmentSlot armorSlot, Identifier texture) {
-        super(Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.PLAYER_INNER_ARMOR));
+        super(Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.PLAYER_ARMOR.chest()));
         this.armorSlot = armorSlot;
         this.model = model;
         this.instance = instance;
@@ -65,37 +66,17 @@ public class GeoArmorRendererV2 extends HumanoidModel<LivingEntity> implements I
 
     public void scaleModelForBaby(PoseStack poseStack, LivingEntity livingEntity, float partialTick, EquipmentSlot slot,
                                   HumanoidModel<?> original) {
-        if (!this.young) {
+        if (!livingEntity.isBaby()) {
             return;
         }
-
-        if (slot == EquipmentSlot.HEAD) {
-            if (original.scaleHead) {
-                float headScale = 1.5f / original.babyHeadScale;
-                poseStack.scale(headScale, headScale, headScale);
-            }
-            poseStack.translate(0, original.babyYHeadOffset / 16f, original.babyZHeadOffset / 16f);
-        } else {
-            float bodyScale = 1 / original.babyBodyScale;
-            poseStack.scale(bodyScale, bodyScale, bodyScale);
-            poseStack.translate(0, original.bodyYOffset / 16f, 0);
-        }
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack poseStack, @NotNull VertexConsumer buffer, int light, int overlay, int color) {
-        float red = ARGB.red(color) / 255.0F;
-        float green = ARGB.green(color) / 255.0F;
-        float blue = ARGB.blue(color) / 255.0F;
-        float alpha = ARGB.alpha(color) / 255.0F;
-        renderArmorToBuffer(poseStack, Minecraft.getInstance().renderBuffers().bufferSource(), light, overlay, red, green, blue, alpha);
-        afterRender(poseStack, buffer, light, overlay, red, green, blue, alpha);
+        poseStack.scale(0.5F, 0.5F, 0.5F);
+        poseStack.translate(0, slot == EquipmentSlot.HEAD ? 1.5F : 1.0F, 0);
     }
 
     @Override
     public void renderArmorToBuffer(PoseStack poseStack, MultiBufferSource bufferSource, int light, int overlay,
                                     float red, float green, float blue, float alpha) {
-        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
+        float partialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
 
         poseStack.pushPose();
         if (this.livingEntity != null && this.equipmentSlot != null && this.original != null) {

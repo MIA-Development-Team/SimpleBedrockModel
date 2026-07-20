@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +27,6 @@ import java.util.List;
  * 跟随模型空间渲染。世界空间粒子（{@code worldSpace=true}）在生成时立即投递到
  * 原版 {@code ParticleEngine}，由原版管线管理生命周期、渲染和碰撞。
  */
-@OnlyIn(Dist.CLIENT)
 public class FirstPersonParticleSystem {
     // 发射器按手分组：主副手各一份。tick/render/getParticleCount 遍历两者（已生成粒子无条件渲染，
     // 基准 pose 在同一 pass 内一致），仅 stopEmitters 需按手定位。
@@ -43,8 +41,7 @@ public class FirstPersonParticleSystem {
 
     private List<ParticleEmitterInstance> emittersFor(InteractionHand hand) {
         return hand == InteractionHand.OFF_HAND ? offEmitters : mainEmitters;
-    }
-
+}
     /**
      * 添加一个主手粒子效果发射器（兼容旧调用方，单手物品默认归主手）。
      *

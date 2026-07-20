@@ -6,7 +6,6 @@ import com.github.mcmodderanchor.simplebedrockmodel.v2.util.RenderDistance;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -29,12 +28,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
  * 相机动画、晃动、定位组、LOD 等通用逻辑沿用 {@link IFPGeoItemRenderer} 的默认实现，
  * 与 v1 路径行为保持一致。
  */
-public abstract class AbstractGeoItemRendererV2 extends BlockEntityWithoutLevelRenderer implements IFPGeoItemRenderer {
+public abstract class AbstractGeoItemRendererV2 implements IFPGeoItemRenderer {
     public static final String FP_CAMERA_BONE_NAME = "camera";
     private static final SlotModel SLOT_MODEL = new SlotModel();
 
     public AbstractGeoItemRendererV2() {
-        super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
     }
 
     /**
@@ -99,13 +97,12 @@ public abstract class AbstractGeoItemRendererV2 extends BlockEntityWithoutLevelR
     }
 
     @ParametersAreNonnullByDefault
-    @Override
     public void renderByItem(ItemStack stack, ItemDisplayContext ctx, PoseStack poseStack, MultiBufferSource bufferSource,
                              int light, int overlay) {
         if (ctx.firstPerson()) {
             return;
         }
-        render(stack, ctx, poseStack, bufferSource, light, overlay, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true));
+        render(stack, ctx, poseStack, bufferSource, light, overlay, Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true));
     }
 
     protected void render(ItemStack stack, ItemDisplayContext ctx, PoseStack poseStack, MultiBufferSource bufferSource,

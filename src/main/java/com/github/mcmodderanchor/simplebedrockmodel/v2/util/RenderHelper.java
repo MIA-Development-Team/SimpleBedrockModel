@@ -8,21 +8,19 @@ import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.ClientHooks;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
-@OnlyIn(Dist.CLIENT)
 public final class RenderHelper {
     public static void blit(PoseStack poseStack, float x, float y, float uOffset, float vOffset, float pWidth, float height, float textureWidth, float textureHeight) {
         blit(poseStack, x, y, pWidth, height, uOffset, vOffset, pWidth, height, textureWidth, textureHeight);
@@ -37,13 +35,8 @@ public final class RenderHelper {
     }
 
     private static void innerBlit(Matrix4f matrix, float x1, float x2, float y1, float y2, float blitOffset, float minU, float maxU, float minV, float maxV) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferbuilder.addVertex(matrix, x1, y2, blitOffset).setUv(minU, maxV);
-        bufferbuilder.addVertex(matrix, x2, y2, blitOffset).setUv(maxU, maxV);
-        bufferbuilder.addVertex(matrix, x2, y1, blitOffset).setUv(maxU, minV);
-        bufferbuilder.addVertex(matrix, x1, y1, blitOffset).setUv(minU, minV);
-        BufferUploader.draw(bufferbuilder.buildOrThrow());
+        // Screen quads are submitted by GuiGraphicsExtractor on 26.1. This
+        // legacy helper is retained as a source-compatible no-op.
     }
 
 //    public static void enableItemEntityStencilTest() {
@@ -79,27 +72,20 @@ public final class RenderHelper {
     @Deprecated
     public static void renderFirstPersonArm(LocalPlayer player, HumanoidArm hand, PoseStack matrixStack, int combinedLight) {
         Minecraft mc = Minecraft.getInstance();
-        EntityRenderDispatcher renderManager = mc.getEntityRenderDispatcher();
-        PlayerRenderer renderer = (PlayerRenderer) renderManager.getRenderer(player);
-        MultiBufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
-
-        if (hand == HumanoidArm.RIGHT) {
-            renderer.renderRightHand(matrixStack, buffer, combinedLight, player);
-        } else {
-            renderer.renderLeftHand(matrixStack, buffer, combinedLight, player);
-        }
+        MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        renderFirstPersonArm(player, buffer, hand, matrixStack, combinedLight);
+        buffer.endBatch();
     }
 
     public static void renderFirstPersonArm(LocalPlayer player, MultiBufferSource bufferSource, HumanoidArm hand, PoseStack matrixStack, int combinedLight) {
         Minecraft mc = Minecraft.getInstance();
-        EntityRenderDispatcher renderManager = mc.getEntityRenderDispatcher();
-        PlayerRenderer renderer = (PlayerRenderer) renderManager.getRenderer(player);
-
-        if (hand == HumanoidArm.RIGHT) {
-            renderer.renderRightHand(matrixStack, bufferSource, combinedLight, player);
-        } else {
-            renderer.renderLeftHand(matrixStack, bufferSource, combinedLight, player);
-        }
+        AvatarRenderer renderer = (AvatarRenderer) mc.getEntityRenderDispatcher().getRenderer(player);
+        PlayerModel model = (PlayerModel) renderer.getModel();
+        ModelPart arm = hand == HumanoidArm.RIGHT ? model.rightArm : model.leftArm;
+        ModelPart sleeve = hand == HumanoidArm.RIGHT ? model.rightSleeve : model.leftSleeve;
+        var buffer = bufferSource.getBuffer(RenderTypes.entityTranslucent(player.getSkin().body().texturePath()));
+        arm.render(matrixStack, buffer, combinedLight, OverlayTexture.NO_OVERLAY);
+        sleeve.render(matrixStack, buffer, combinedLight, OverlayTexture.NO_OVERLAY);
     }
 
     /**

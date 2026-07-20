@@ -4,32 +4,33 @@ import com.github.mcmodderanchor.simplebedrockmodel.v2.particle.data.ParticleDes
 import com.github.mcmodderanchor.simplebedrockmodel.v2.particle.data.ParticleEffectDefinition;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.particle.data.component.*;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.particle.data.component.motion.*;
-import com.github.mcmodderanchor.simplebedrockmodel.v2.client.compat.sodium.SodiumCompat;
-import com.github.mcmodderanchor.simplebedrockmodel.v2.client.compat.sodium.SodiumParticleVertexWriter;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.particle.runtime.ParticleEmitterInstance;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.particle.runtime.ParticleInstance;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.util.math.MathUtil;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.util.ARGB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 
 import java.lang.Math;
 import java.util.List;
 
-@OnlyIn(Dist.CLIENT)
-public class SnowStormParticle extends TextureSheetParticle {
+public class SnowStormParticle extends SingleQuadParticle {
 
     private final ParticleInstance particleData;
     private final ParticleEffectDefinition definition;
@@ -56,12 +57,14 @@ public class SnowStormParticle extends TextureSheetParticle {
     private final ParticleExpireIfNotInBlocks expireIfNotInBlocks;
 
     // 自定义 RenderType（按纹理+材质缓存）
-    private final ParticleRenderType renderType;
+    private final SingleQuadParticle.Layer layer;
 
     public SnowStormParticle(ClientLevel level, ParticleInstance particleData,
                              ParticleEffectDefinition definition,
                              ParticleEmitterInstance emitter) {
-        super(level, particleData.x, particleData.y, particleData.z);
+        super(level, particleData.x, particleData.y, particleData.z,
+                Minecraft.getInstance().getAtlasManager().get(
+                        new SpriteId(TextureAtlas.LOCATION_PARTICLES, MissingTextureAtlasSprite.getLocation())));
         this.particleData = particleData;
         this.definition = definition;
         this.emitter = emitter;
@@ -123,7 +126,7 @@ public class SnowStormParticle extends TextureSheetParticle {
 
         // RenderType
         ParticleDescription desc = definition.getDescription();
-        this.renderType = MolangWorldParticleRenderType.get(desc.getMaterial(), desc.getTexture());
+        this.layer = MolangWorldParticleRenderType.get(desc.getMaterial(), desc.getTexture());
     }
 
     @Override
@@ -249,7 +252,7 @@ public class SnowStormParticle extends TextureSheetParticle {
     private static final Matrix3f TEMP_MAT3 = new Matrix3f();
 
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
         Vec3 camPos = camera.position();
         float cx = (float) (Mth.lerp(partialTicks, this.xo, this.x) - camPos.x());
         float cy = (float) (Mth.lerp(partialTicks, this.yo, this.y) - camPos.y());
@@ -266,56 +269,11 @@ public class SnowStormParticle extends TextureSheetParticle {
         }
 
         // 粒子尺寸
-        float hw = particleData.width * particleData.spawnScale;
-        float hh = particleData.height * particleData.spawnScale;
-
-        // UV
-        float u0 = particleData.u0;
-        float v0 = particleData.v0;
-        float u1 = particleData.u1;
-        float v1 = particleData.v1;
-
-        int light = getLightColor(partialTicks);
-
-        AXIS_X.set(1, 0, 0).rotate(QUATERNION).mul(hw);
-        AXIS_Y.set(0, 1, 0).rotate(QUATERNION).mul(hh);
-
-        float ax = AXIS_X.x(), ay = AXIS_X.y(), az = AXIS_X.z();
-        float bx = AXIS_Y.x(), by = AXIS_Y.y(), bz = AXIS_Y.z();
-
-        float x0 = cx - ax - bx;
-        float y0 = cy - ay - by;
-        float z0 = cz - az - bz;
-        float x1 = cx - ax + bx;
-        float y1 = cy - ay + by;
-        float z1 = cz - az + bz;
-        float x2 = cx + ax + bx;
-        float y2 = cy + ay + by;
-        float z2 = cz + az + bz;
-        float x3 = cx + ax - bx;
-        float y3 = cy + ay - by;
-        float z3 = cz + az - bz;
-
-        if (SodiumCompat.isSodiumInstalled() && SodiumParticleVertexWriter.tryRender(
-                buffer,
-                x0, y0, z0, u0, v1,
-                x1, y1, z1, u0, v0,
-                x2, y2, z2, u1, v0,
-                x3, y3, z3, u1, v1,
-                rCol, gCol, bCol, alpha, light)) {
-            return;
-        }
-        renderVertex(buffer, x0, y0, z0, u0, v1, light);
-        renderVertex(buffer, x1, y1, z1, u0, v0, light);
-        renderVertex(buffer, x2, y2, z2, u1, v0, light);
-        renderVertex(buffer, x3, y3, z3, u1, v1, light);
-    }
-
-    private void renderVertex(VertexConsumer buffer, float x, float y, float z, float u, float v, int light) {
-        buffer.addVertex(x, y, z)
-                .setUv(u, v)
-                .setColor(rCol, gCol, bCol, alpha)
-                .setLight(light);
+        float scale = Math.max(particleData.width, particleData.height) * particleData.spawnScale;
+        state.add(layer, cx, cy, cz,
+                QUATERNION.x, QUATERNION.y, QUATERNION.z, QUATERNION.w,
+                scale, particleData.u0, particleData.u1, particleData.v0, particleData.v1,
+                ARGB.colorFromFloat(alpha, rCol, gCol, bCol), getLightCoords(partialTicks));
     }
 
     // 应用朝向模式
@@ -395,8 +353,8 @@ public class SnowStormParticle extends TextureSheetParticle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return renderType;
+    protected SingleQuadParticle.Layer getLayer() {
+        return layer;
     }
 
     @Override
@@ -434,8 +392,8 @@ public class SnowStormParticle extends TextureSheetParticle {
     }
 
     @Override
-    public int getLightColor(float partialTick) {
-        return environmentLighting ? super.getLightColor(partialTick) : LightCoordsUtil.FULL_BRIGHT;
+    protected int getLightCoords(float partialTick) {
+        return environmentLighting ? super.getLightCoords(partialTick) : LightCoordsUtil.FULL_BRIGHT;
     }
 
     /**

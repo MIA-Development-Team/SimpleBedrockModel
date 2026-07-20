@@ -6,6 +6,7 @@ import com.maydaymemory.mae.basic.YXZRotationView;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -15,7 +16,20 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3fc;
 
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+
 public interface IFPGeoItemRenderer {
+    Map<Item, IFPGeoItemRenderer> REGISTRY = new ConcurrentHashMap<>();
+
+    static void register(Item item, IFPGeoItemRenderer renderer) {
+        REGISTRY.put(item, renderer);
+    }
+
+    static Optional<IFPGeoItemRenderer> find(ItemStack stack) {
+        return Optional.ofNullable(REGISTRY.get(stack.getItem()));
+    }
 
     default boolean isSameItem(ItemStack oldStack, ItemStack newStack) {
         return ItemStack.isSameItem(oldStack, newStack);

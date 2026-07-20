@@ -4,8 +4,9 @@ import com.github.mcmodderanchor.simplebedrockmodel.v2.client.handler.FirstPerso
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerModel.class)
-public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
+public class PlayerModelMixin extends HumanoidModel<AvatarRenderState> {
     @Shadow
     @Final
     public ModelPart leftSleeve;
@@ -28,9 +29,10 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
         super(part);
     }
 
-    @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At(value = "TAIL"))
-    private void setRotationAnglesTail(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
-        if (!(entityIn instanceof Player player)) {
+    @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;)V", at = @At("TAIL"))
+    private void setRotationAnglesTail(AvatarRenderState state, CallbackInfo ci) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) {
             return;
         }
 
@@ -40,11 +42,11 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
         var instance2 = FirstPersonRenderHandler.getActiveAnimationInstance(InteractionHand.OFF_HAND);
         boolean rl = instance != null && instance.shouldRenderHand();
         boolean rl2 = instance2 != null && instance2.shouldRenderHand();
-        if (ageInTicks == 0F && (rl || rl2)) {
+        if (rl || rl2) {
             sbm$resetAll(this.rightArm);
             sbm$resetAll(this.leftArm);
-            this.rightSleeve.copyPoseFrom(this.rightArm);
-            this.leftSleeve.copyPoseFrom(this.leftArm);
+            this.rightSleeve.loadPose(this.rightArm.storePose());
+            this.leftSleeve.loadPose(this.leftArm.storePose());
         }
     }
 

@@ -9,11 +9,9 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.function.Function;
 
-@OnlyIn(Dist.CLIENT)
 public final class BedrockModelRenderTypes {
     private static final RenderPipeline POLY_MESH_CUTOUT_PIPELINE = RenderPipeline.builder(RenderPipelines.ENTITY_SNIPPET)
             .withLocation("pipeline/simplebedrockmodel_poly_mesh_cutout")
@@ -26,8 +24,7 @@ public final class BedrockModelRenderTypes {
     private static final Function<Identifier, RenderType> POLY_MESH_CUTOUT = Util.memoize(BedrockModelRenderTypes::createPolyMeshCutout);
 
     private BedrockModelRenderTypes() {
-    }
-
+}
     public static RenderType polyMeshCutout(Identifier texture) {
         return POLY_MESH_CUTOUT.apply(texture);
     }

@@ -12,7 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 // 用来管理世界中的粒子发射器
-@OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = SimpleBedrockModel.MOD_ID, value = Dist.CLIENT)
 public class WorldEmitterManager {
     private static final AnimationClock CLOCK = AnimationClocks.client();

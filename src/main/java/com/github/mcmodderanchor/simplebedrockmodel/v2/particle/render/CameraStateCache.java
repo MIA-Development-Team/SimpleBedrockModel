@@ -2,13 +2,11 @@ package com.github.mcmodderanchor.simplebedrockmodel.v2.particle.render;
 
 
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 
-@OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(value = Dist.CLIENT)
 public final class CameraStateCache {
 
@@ -19,8 +17,7 @@ public final class CameraStateCache {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onComputeCameraAngles(ViewportEvent.ComputeCameraAngles event) {
         cameraRoll = event.getRoll();
-    }
-
+}
     /**
      * 获取当前帧的 camera roll（度）。
      */
