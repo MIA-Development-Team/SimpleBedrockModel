@@ -7,7 +7,15 @@ plugins {
     id 'maven-publish'
 }
 
-version = mod_version
+def release = providers.environmentVariable("RELEASE")
+boolean dev = !release.map { it.toBoolean() }.getOrElse(false)
+String buildNumber = providers.environmentVariable("BUILD_NUMBER").orNull
+
+def gitHash = providers.exec {
+    commandLine 'git', 'rev-parse', '--short', 'HEAD'
+}.standardOutput.asText.map { it.trim() }.getOrElse("dev")
+
+version = mod_version + (dev && buildNumber != null ? "-${buildNumber}" : "")
 group = mod_group_id
 base {
     archivesName = 'simplebedrockmodel'
@@ -211,21 +219,18 @@ modrinth {
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            groupId = project.group
-            artifactId = base.archivesName.get()
-            version = project.version
-
+        register('mavenJava', MavenPublication) {
             from components.java
+            artifactId = 'SimpleBedrockModel-26.1.2-NeoForge'
+        }
+    }
 
-            pom {
-                name = mod_name
-                description = mod_description
-                licenses {
-                    license {
-                        name = mod_license
-                    }
-                }
+    repositories {
+        maven {
+            url = "https://maven.ringlo.im/releases"
+            credentials {
+                username = providers.environmentVariable("MAVEN_USERNAME").orNull
+                password = providers.environmentVariable("MAVEN_PASSWORD").orNull
             }
         }
     }
